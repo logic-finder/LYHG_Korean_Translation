@@ -1,0 +1,69 @@
+html {
+   background-color: whitesmoke;
+   height: 100%;
+}
+
+body {
+   width: 60%;
+   margin-left: 400px;
+   padding: 20px;
+   height: inherit;
+}
+
+code {
+   background-color: lightgray;
+   border-radius: 3px;
+   padding: 3px;
+}
+
+#navigator {
+   position: fixed;
+   top: 0px;
+   left: 0px;
+   width: 250px;
+   height: 100%;
+   background-color: lightgray;
+}
+
+#navigator > h2 {
+   margin-left: 20px;
+}
+
+div.plain-text,
+div.code-block {
+   display: flex;
+   justify-content: center;
+   margin: 20px 0;
+}
+
+div.code-block {
+   background-color: lightgray;
+}
+
+div.plain-text > h1,
+div.plain-text > h2,
+div.plain-text > p {
+   width: 45%;
+   margin: 0 20px;
+}
+
+div.plain-text > p {
+   text-align: justify;
+   line-height: 22px;
+}
+
+div.code-block > pre,
+div.code-block > p {
+   width: 45%;
+   margin: 0 20px;
+}
+
+#memo {
+   width: 500px;
+   padding: 20px;
+   background-color: lightgoldenrodyellow;
+}
+
+#dummy {
+   height: 100px;
+}
