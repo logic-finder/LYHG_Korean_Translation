@@ -1,3 +1,4 @@
+/* § General */
 html {
    background-color: whitesmoke;
    height: 100%;
@@ -16,17 +17,150 @@ code {
    padding: 3px;
 }
 
+/* § Navigator */
 #navigator {
    position: fixed;
    top: 0px;
    left: 0px;
-   width: 250px;
+   width: 300px;
    height: 100%;
-   background-color: lightgray;
+   background-color: rgb(221, 221, 221);
+   border-right: 3px double gray;
+   overflow-x: scroll;
 }
 
 #navigator > h2 {
-   margin-left: 20px;
+   text-align: center;
+}
+
+#navigator > hr {
+   box-sizing: border-box;
+   border: none;
+   border-top: 1px solid gray;
+   border-bottom: 1px solid white;
+   overflow: visible;
+   text-align: center;
+   height: 2px;
+}
+
+/* nav-misc, -intro */
+#navigator > ul,
+#navigator > ol {
+   padding: 0 40px 0 40px;
+}
+
+#navigator > ol {
+   margin-bottom: 16px;
+}
+
+/* nav-misc */
+#navigator > ul#nav-misc {
+   list-style-type: "* ";
+   padding-left: 25px;
+}
+
+#navigator > ul > li:not(:last-child) {
+   margin-bottom: 5px;
+}
+
+
+/* nav-sub */
+/* note: this element can be placed in nav-intro or nav-main. */
+#nav-sub {
+   padding-top: 5px;
+}
+
+/* nav-intro */
+#navigator > ol#nav-intro {
+   list-style-type: upper-roman;
+}
+
+#navigator > ol#nav-intro > li:not(:last-child) {
+   margin-bottom: 5px;
+}
+
+/* nav-sub in nav-intro */
+#navigator > ol#nav-intro > li > ol#nav-sub {
+   list-style-type: decimal;
+   padding-left: 20px;
+}
+
+#navigator > ol#nav-intro > li > ol#nav-sub > li:not(:last-child) {
+   margin-bottom: 5px;
+}
+
+/* nav-main */
+#navigator > div#nav-main {
+   padding: 0 20px 0 20px;
+}
+
+#navigator > div#nav-main > div.main-list-item {
+   width: 100%;
+}
+
+#navigator > div#nav-main > div.main-list-item:not(:last-child) {
+   margin-bottom: 3px;
+   padding-bottom: 2px;
+}
+
+#navigator > div#nav-main > div.main-list-item > p {
+   margin-top: 0;
+   margin-bottom: 0;
+}
+
+/* first p elem: numbering */
+#navigator > div#nav-main > div.main-list-item > p:nth-child(1) {
+   display: inline-block;
+   text-align: end;
+   max-width: 60px;
+   vertical-align: top;
+}
+
+/* second p elem: title */
+#navigator > div#nav-main > div.main-list-item > p:nth-child(2) {
+   display: inline-block;
+   width: calc(100% - 60px);
+   padding-left: 4px;
+}
+
+/* nav-sub in nav-main */
+#navigator > div#nav-main > div.main-list-item > div#nav-sub {
+   width: 100%;
+   padding-left: 20px;
+   padding-right: 20px;
+   overflow-x: visible;
+}
+
+#navigator > div#nav-main > div.main-list-item > div#nav-sub > div {
+   width: 100%;
+}
+
+#navigator > div#nav-main > div.main-list-item > div#nav-sub > div:not(:last-child) {
+   margin-bottom: 3px;
+   padding-bottom: 2px;
+}
+
+#navigator > div#nav-main > div.main-list-item > div#nav-sub > div > p {
+   margin-top: 0;
+   margin-bottom: 0;
+}
+
+#navigator > div#nav-main > div.main-list-item > div#nav-sub > div > p:nth-child(1) {
+   display: inline-block;
+   text-align: end;
+   max-width: 60px;
+   vertical-align: top;
+}
+
+#navigator > div#nav-main > div.main-list-item > div#nav-sub > div > p:nth-child(2) {
+   display: inline-block;
+   width: calc(100% - 60px);
+   padding-left: 4px;
+}
+
+/* § Contents */
+body > *:nth-last-child(3) {
+   padding-bottom: 100px;
 }
 
 div.plain-text,
@@ -59,11 +193,7 @@ div.code-block > p {
 }
 
 #memo {
-   width: 500px;
+   width: 400px;
    padding: 20px;
    background-color: lightgoldenrodyellow;
-}
-
-#dummy {
-   height: 100px;
 }
