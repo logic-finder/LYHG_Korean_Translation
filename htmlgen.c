@@ -1,148 +1,246 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
-#include <stdbool.h>
 
-#define LINE_LEN 2048
-/* Generator directives */
-#define GD_PRE_BEGIN    "gd::pre"
-#define GD_PRE_END      "gd::endpre"
-#define GD_H1           "gd::h1"
-#define GD_H2           "gd::h2"
+// Compile: at Developer Command Prompt, run "cl htmlgen.c /utf-8".
+// Note: in case of #define UNIX, "gcc -o htmlgen htmlgen.c" would work, I guess.
+#define WIN32
+#include "htmlgen.h"
 
-void print_prologue(void);
-void print_epilogue(void);
+int main(int argc, char *argv[]) {
+   if (argc != 4) raise_err(
+      "htmlgen: usage: htmlgen input.txt output.html FILE_NAME\n"
+      "argv[3] is required to call a function in navigator.js.");
 
-/* Compile: cl htmlgen.c /utf-8 */
-/* Usage: htmlgen < input.txt > output.html */
-int main(void) {
-   char *line;
+   FILE *src  = open_file(argv[1], "r");
+   FILE *dest = open_file(argv[2], "w");
 
-   line = malloc(LINE_LEN);
-   if (line == NULL) {
-      fprintf(stderr, "failed to malloc for line.");
-      exit(EXIT_FAILURE);
-   }
+   print_prologue(dest);
+   print_contents(src, dest);
+   print_epilogue(dest, argv[3]);
 
-   int tag_count;
-   bool in_line;
-   bool in_pre = false;
-   int tag_kind = 0;    /* bit-field */
+   fclose(src);
+   fclose(dest);
+   atexit(notify_done);
+   return 0;
+}
+
+void raise_err(const char *err_msg, ...) {
+   va_list ap;
    
-   print_prologue();
-   tag_count = 0;
-   while (fgets(line, LINE_LEN, stdin) != NULL) {
-      /* In case of an empty line */
-      if (strncmp(line, "\n", 2) == 0)
-         continue;
-      
-      /* Open <div> */
-      if (tag_count == 0) {
-         if (strncmp(line, GD_PRE_BEGIN, strlen(GD_PRE_BEGIN)) == 0) {
-            puts("      <div class=\"code-block\">");
-            puts("         <pre>\n");
-            in_pre = true;
-            continue;
-         }
-         else if (strncmp(line, GD_H1, strlen(GD_H1)) == 0) {
-            tag_kind |= 1 << 0;
-            continue;
-         }
-         else if (strncmp(line, GD_H2, strlen(GD_H2)) == 0) {
-            tag_kind |= 1 << 1;
-            continue;
-         }
-         
-         if (!in_pre)
-            puts("      <div class=\"plain-text\">");
-      }
-      
-      /* Check if the line is not finished. */
-      if (strlen(line) == LINE_LEN - 1
-            && line[LINE_LEN - 2] != '\n')
-      {
-         in_line = true;
+   va_start(ap, err_msg);
+   vfprintf(stderr, err_msg, ap);
+   va_end(ap);
+   fprintf(stderr, "\n");
+   exit(EXIT_FAILURE);
+}
+
+FILE *open_file(const char *filename, const char *mode) {
+   const char *current_dir = "./";
+   const int current_dir_len = 2;
+   const int filename_len = strlen(filename);
+   char *path;
+
+   path = malloc(current_dir_len + filename_len + 1);
+   if (path == NULL)
+      raise_err("htmlgen: failed to malloc.");
+   strncpy(path, current_dir, current_dir_len + 1);
+   strncat(path, filename, filename_len);
+
+   FILE *fp;
+   
+   fp = fopen(path, mode);
+   if (fp == NULL)
+      raise_err("htmlgen: couldn't open %s.", path);
+   free(path);
+   
+   return fp;
+}
+
+void print_prologue(FILE *dest) {
+   // Note: 827 characters long
+   // the maximum length of a string literal = at least 509 (C89) / 4095 (C99) characters long
+   if (fputs(
+         "<!DOCTYPE html>\n"
+         "<html lang=\"ko-KR\">\n"
+         "   <head>\n"
+         "      <meta charset=\"utf-8\" />\n"
+         "      <meta name=\"viewport\" content=\"width=device-width\" />\n"
+         "      <link href=\"../style.css\" rel=\"stylesheet\" />\n"
+         "      <title></title>\n"
+         "   </head>\n"
+         "   <body>\n"
+         "      <div id=\"navigator\">\n"
+         "         <h2>목 차</h2>\n"
+         "         <hr>\n"
+         "         <ul id=\"nav-misc\"></ul>\n"
+         "         <hr>\n"
+         "         <ol id=\"nav-intro\"></ol>\n"
+         "         <div id=\"nav-main\"></div>\n"
+         "      </div>\n"
+         "      <p id=\"memo\">\n"
+         "         <b>메모</b>:&emsp;개인적인 공부용으로 번역하였습니다.\n"
+         "         <br>영어 실력 및 각종 이해력 등의 이슈로 번역이 부정확할 수 있으리라 생각합니다.\n"
+         "         <br>이에 편의를 위해 원문을 옆에 비치하였사오니 해석이 좀 이?상하다 싶으시면 참고하시기 바랍니다. 감사합니다.\n"
+         "      </p>\n",
+         dest) == EOF)
+      raise_err("htmlgen: failed to fputs.");
+}
+
+void print_contents(FILE *src, FILE *dest) {
+   prcs_ln_params params;
+
+   params.at_div_begin = true;
+   while (!feof(src)) {
+      char *line;
+
+      line = get_line(src);
+      if (line == NULL)
+         return;
+      process_line(dest, line, &params);
+      free(line);
+   }
+}
+
+void print_epilogue(FILE *dest, const char *title_name) {
+   // Note: 113 characters long
+   if (fprintf(dest,
+         "   </body>\n"
+         "   <script src=\"../navigator.js\"></script>\n"
+         "   <script>\n"
+         "      constructTOC(\"%s\");\n"
+         "   </script>\n"
+         "</html>",
+         title_name) < 0)
+      raise_err("htmlgen: failed to fprintf.");
+}
+
+char *get_line(FILE *src) {
+   char *line;
+   int line_cur_idx, line_max_len;
+
+   line_max_len = LINE_READ_UNIT;
+   line = malloc(line_max_len);
+   if (line == NULL)
+      raise_err("htmlgen: failed to malloc.");
+   line_cur_idx = 0;
+
+   while (fgets(line + line_cur_idx, LINE_READ_UNIT, src) != NULL) {
+      const int line_len = strlen(line);
+      const bool end_of_line = line[line_len - 1] == '\n';
+      const bool end_of_file = feof(src) ? true : false;
+      const bool line_ended = end_of_line || end_of_file;
+
+      if (line_ended) {
+         line[strcspn(line, NEWLINE_MARK)] = '\0';
+         return line; // tried fgets and read something
       }
       else {
-         char *last_char_ptr;
-
-         last_char_ptr = &line[strlen(line) - 1];
-         if (*last_char_ptr == '\n')
-            *last_char_ptr = '\0';
-         in_line = false;
+         line_max_len += LINE_READ_UNIT - 1;
+         line = realloc(line, line_max_len);
+         if (line == NULL)
+            raise_err("htmlgen: failed to realloc.");
+         line_cur_idx += LINE_READ_UNIT - 1; // so as to overwrite the trailing \0.
       }
+   }
+   if (ferror(src))
+      raise_err("htmlgen: error during fgets.");
+   
+   // tried fgets but met EOF immediately
+   return NULL;
+}
 
-      /* Generate tags */
-      if (!in_pre) {
-         char tag_name[3];
-
-         if (tag_kind & 1 << 0) strncpy_s(tag_name, 3, "h1", 2);
-         else if (tag_kind & 1 << 1) strncpy_s(tag_name, 3, "h2", 2);
-         else strncpy_s(tag_name, 3, "p", 1);
-
-         if (!in_line)
-            printf("         <%s>", tag_name);
-         fputs(line, stdout);
-         if (!in_line) {
-            printf("</%s>\n", tag_name);
-            tag_count++;
-         }
+void process_line(FILE *dest, const char *line, prcs_ln_params *pptr) {
+   if (pptr->at_div_begin) {
+      if (strlen(line) == 0)
+         return;
+      if (strcmp(line, GD_PRE_BEGIN) == 0) {
+         open_codeblock_div(dest);
+         pptr->in_pre = true;
       }
       else {
-         if (strncmp(line, GD_PRE_END, strlen(GD_PRE_END)) == 0) {
-            puts("         </pre>");
-            puts("         <p></p>");
-            tag_count += 2;
-            in_pre = false;
-         }
+         open_plaintext_div(dest);
+         pptr->tag_count = 0;
+         if (strcmp(line, GD_H1) == 0)
+            pptr->tag_name = "h1";
+         else if (strcmp(line, GD_H2) == 0)
+            pptr->tag_name = "h2";
          else {
-            if (in_line)
-               fputs(line, stdout);
-            else
-               puts(line);
+            pptr->tag_name = "p";
+            put_plain_line(dest, pptr->tag_name, line, &pptr->tag_count);
+         }
+         pptr->in_pre = false;
+      }
+      pptr->at_div_begin = false;
+   }
+   else {
+      if (pptr->in_pre) {
+         if (strcmp(line, GD_PRE_END) == 0) {
+            close_codeblock_div(dest);
+            pptr->at_div_begin = true;
+         }
+         else if (strlen(line) == 0)
+            put_code_line(dest, "");
+         else
+            put_code_line(dest, line);
+      }
+      else {
+         if (strlen(line) == 0)
+            return;
+         put_plain_line(dest, pptr->tag_name, line, &pptr->tag_count);
+         if (pptr->tag_count == 2) {
+            close_plaintext_div(dest);
+            pptr->at_div_begin = true;
          }
       }
-
-      /* Close <div> */
-      if (tag_count == 2) {
-         puts("      </div>");
-         tag_count = 0;
-         tag_kind = 0;
-      }
    }
-   if (ferror(stdin)) {
-      fprintf(stderr, "error occurred while fgets.");
-      exit(EXIT_FAILURE);
-   }
-   print_epilogue();
 }
 
-void print_prologue(void) {
-   puts("<!DOCTYPE html>");
-   puts("<html lang=\"ko-KR\">");
-   puts("   <head>");
-   puts("      <meta charset=\"utf-8\" />");
-   puts("      <meta name=\"viewport\" content=\"width=device-width\" />");
-   puts("      <link href=\"../style.css\" rel=\"stylesheet\" />");
-   puts("      <title>TITLE</title>");
-   puts("   </head>");
-   puts("   <body>");
-   puts("      <div id=\"navigator\">");
-   puts("         <h2>목 차</h2>");
-   puts("         <ul></ul>");
-   puts("      </div>");
-   puts("      <p id=\"memo\">");
-   puts("         <b>메모</b>:&emsp;개인적인 공부용으로 번역하였습니다.");
-   puts("         <br>영어 실력 및 각종 이해력 등의 이슈로 번역이 부정확할 수 있으리라 생각합니다.");
-   puts("         <br>이에 편의를 위해 원문을 옆에 비치하였사오니 해석이 좀 이?상하다 싶으면 참고하시기 바랍니다. 감사합니다.");
-   puts("         <br><br><b>원 글 주소</b>: <a href=\"LINK\">LINK</a>");
-   puts("      </p>");
+void open_plaintext_div(FILE *dest) {
+   if (fputs(
+         "      <div class=\"plain-text\">\n",
+         dest) == EOF)
+      raise_err("htmlgen: failed to fputs.");
 }
 
-void print_epilogue(void) {
-   puts("      <div id=\"dummy\"></div>");
-   puts("   </body>");
-   puts("   <script src=\"../navigator.js\"></script>");
-   puts("   <script>constructTableOfContents(\"LINK\");</script>");
-   puts("</html>");
+void open_codeblock_div(FILE *dest) {
+   if (fputs(
+         "      <div class=\"code-block\">\n"
+         "         <pre>\n"
+         "\n",
+         dest) == EOF)
+      raise_err("htmlgen: failed to fputs.");
+}
+
+void put_plain_line(
+   FILE *dest,
+   const char *tag_name, const char *line, int *tag_count_ptr
+) {
+   if (fprintf(dest,
+         "         <%s>%s</%s>\n",
+         tag_name, line, tag_name) < 0)
+      raise_err("htmlgen: failed to fprintf.");
+   (*tag_count_ptr)++;
+}
+
+void put_code_line(FILE *dest, const char *line) {
+   if (fprintf(dest, "%s\n", line) < 0)
+      raise_err("htmlgen: failed to fprintf.");
+}
+
+void close_plaintext_div(FILE *dest) {
+   if (fputs("      </div>\n", dest) == EOF)
+      raise_err("htmlgen: failed to fputs.");
+}
+
+void close_codeblock_div(FILE *dest) {
+   if (fputs(
+         "         </pre>\n"
+         "         <p></p>\n"
+         "      </div>\n",
+         dest) == EOF)
+      raise_err("htmlgen: failed to fputs.");
+}
+
+void notify_done(void) {
+   puts("htmlgen: done!");
 }
