@@ -112,6 +112,13 @@ void put_plain_line(
    const char *tag_name, const char *line, int *tag_count_ptr);
 
 /**
+ * @brief prints <div class="partition"></div>.
+ *
+ * @param dest a destination file to write
+ */
+void put_partition(FILE *dest);
+
+/**
  * @brief prints a line itself.
  * 
  * @param dest a destination file to write

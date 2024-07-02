@@ -1,20 +1,27 @@
 /* § General */
+*, *::before, *::after {
+   margin: 0;
+   padding: 0;
+   box-sizing: border-box;
+}
+
 html {
-   background-color: whitesmoke;
+   background-color: aliceblue;
    height: 100%;
+   font-size: 16px;
 }
 
 body {
-   width: 60%;
-   margin-left: 400px;
-   padding: 20px;
+   width: auto;
    height: inherit;
+   margin: 0 100px 0 400px;
 }
 
 code {
    background-color: lightgray;
    border-radius: 3px;
    padding: 3px;
+   margin: 0 2px;
 }
 
 /* § Navigator */
@@ -24,9 +31,9 @@ code {
    left: 0px;
    width: 300px;
    height: 100%;
-   background-color: rgb(221, 221, 221);
+   background-color: linen;
    border-right: 3px double gray;
-   overflow-x: scroll;
+   overflow: auto;
 }
 
 #navigator > h2 {
@@ -34,13 +41,11 @@ code {
 }
 
 #navigator > hr {
-   box-sizing: border-box;
-   border: none;
    border-top: 1px solid gray;
    border-bottom: 1px solid white;
-   overflow: visible;
    text-align: center;
    height: 2px;
+   margin: 8px 0;
 }
 
 /* nav-misc, -intro */
@@ -50,7 +55,7 @@ code {
 }
 
 #navigator > ol {
-   margin-bottom: 16px;
+   margin-bottom: 8px;
 }
 
 /* nav-misc */
@@ -63,11 +68,11 @@ code {
    margin-bottom: 5px;
 }
 
-
 /* nav-sub */
 /* note: this element can be placed in nav-intro or nav-main. */
 #nav-sub {
    padding-top: 5px;
+   word-break: break-word;
 }
 
 /* nav-intro */
@@ -128,7 +133,6 @@ code {
    width: 100%;
    padding-left: 20px;
    padding-right: 20px;
-   overflow-x: visible;
 }
 
 #navigator > div#nav-main > div.main-list-item > div#nav-sub > div {
@@ -158,42 +162,97 @@ code {
    padding-left: 4px;
 }
 
+#navigator > #book-info {
+   text-align: center;
+   padding: 0 20px;
+   margin-top: 10px;
+}
+
+#navigator > #book-info > #book-title {
+   font-size: 1.25rem;
+   font-weight: bold;
+}
+
+#navigator > #book-info > #book-title > #n1,
+#navigator > #book-info > #book-title > #n3 {
+   color: rgb(215, 120, 42);
+}
+
+#navigator > #book-info > #book-title > #n2 {
+   color: rgb(56, 122, 163);
+}
+
+#navigator > #book-info > #book-subtitle {
+   font-weight: bold;
+   margin: 4px 0 8px 0;
+}
+
+#navigator > #book-info > #author,
+#navigator > #book-info > #translator {
+   font-size: 0.75rem;
+   margin-top: 4px;
+   text-align: right;
+}
+
+#navigator > #memo {
+   width: 260px;
+   padding: 20px;
+   margin: 32px auto 32px auto;
+   background-color: lemonchiffon;
+   border: 1px solid burlywood;
+}
+
+#navigator > #img-source {
+   word-break: break-all;
+}
+
 /* § Contents */
-body > *:nth-last-child(3) {
-   padding-bottom: 100px;
+article {
+   padding: 50px 0px;
 }
 
 div.plain-text,
 div.code-block {
+   margin: 0 auto 20px auto;
+}
+
+div.plain-text {
+   width: 100%;
    display: flex;
    justify-content: center;
-   margin: 20px 0;
+}
+
+div.plain-text > div.partition {
+   border-left: 1px dashed gray;
 }
 
 div.code-block {
-   background-color: lightgray;
+   width: 96%;
+   background-color: honeydew;
+   border: 1px solid gray;
 }
 
 div.plain-text > h1,
 div.plain-text > h2,
 div.plain-text > p {
-   width: 45%;
+   min-width: 0;
+   width: 50%;
    margin: 0 20px;
+   word-break: break-word;
+   text-align: justify;
+}
+
+div.plain-text > h1 {
+   font-size: 2rem;
 }
 
 div.plain-text > p {
-   text-align: justify;
-   line-height: 22px;
+   line-height: 1.375rem;
 }
 
-div.code-block > pre,
-div.code-block > p {
-   width: 45%;
-   margin: 0 20px;
-}
-
-#memo {
-   width: 400px;
-   padding: 20px;
-   background-color: lightgoldenrodyellow;
+div.code-block > pre {
+   width: 100%;
+   overflow-x: auto;
+   margin: 0;
+   padding: 10px;
 }

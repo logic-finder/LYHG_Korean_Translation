@@ -57,7 +57,7 @@ FILE *open_file(const char *filename, const char *mode) {
 }
 
 void print_prologue(FILE *dest) {
-   // Note: 827 characters long
+   // Note: 1650 characters long
    // the maximum length of a string literal = at least 509 (C89) / 4095 (C99) characters long
    if (fputs(
          "<!DOCTYPE html>\n"
@@ -65,23 +65,35 @@ void print_prologue(FILE *dest) {
          "   <head>\n"
          "      <meta charset=\"utf-8\" />\n"
          "      <meta name=\"viewport\" content=\"width=device-width\" />\n"
-         "      <link href=\"../style.css\" rel=\"stylesheet\" />\n"
+         "      <link href=\"../src/style.css\" rel=\"stylesheet\" />\n"
          "      <title></title>\n"
          "   </head>\n"
          "   <body>\n"
          "      <div id=\"navigator\">\n"
+         "         <div id=\"book-info\">\n"
+         "            <p id=\"book-title\">\n"
+         "               <span id=\"n1\">Learn You a</span> <span id=\"n2\">Haskell</span> <span id=\"n3\">for Great Good!</span>\n"
+         "            </p>\n"
+         "            <p id=\"book-subtitle\">A Beginner's Guide</p>\n"
+         "            <p id=\"author\">Miran Lipovača&emsp;原著</p>\n"
+         "            <p id=\"translator\"><a href=\"https://github.com/logic-finder\" target=\"_blank\">logicseeker</a>&emsp;&emsp;譯</p>\n"
+         "         </div>\n"
+         "         <hr>\n"
          "         <h2>목 차</h2>\n"
          "         <hr>\n"
          "         <ul id=\"nav-misc\"></ul>\n"
          "         <hr>\n"
          "         <ol id=\"nav-intro\"></ol>\n"
          "         <div id=\"nav-main\"></div>\n"
+         "         <p id=\"memo\">\n"
+         "            <b>메모</b>:&emsp;개인적인 공부용으로 번역하였습니다.\n"
+         "            <br>영어 실력 및 각종 이해력 등의 이슈로 번역이 부정확할 수 있으리라 생각합니다.\n"
+         "            <br>이에 편의를 위해 원문을 옆에 비치하였사오니 해석이 좀 이?상하다 싶으시면 참고하시기 바랍니다. 감사합니다.\n"
+         "         </p>\n"
+         "         <img src=\"../src/Patchouli_Holding_Learn_You_a_Haskell.jpg\" title=\"UwU\" alt=\"a cute character holding the book Learn You a Haskell for Great Good!\">\n"
+         "         <p id=\"img-source\">Source: https://github.com/cat-milk/Anime-Girls-Holding-Programming-Books/blob/master/Haskell/Patchouli_Holding_Learn_You_a_Haskell.jpg</p>"
          "      </div>\n"
-         "      <p id=\"memo\">\n"
-         "         <b>메모</b>:&emsp;개인적인 공부용으로 번역하였습니다.\n"
-         "         <br>영어 실력 및 각종 이해력 등의 이슈로 번역이 부정확할 수 있으리라 생각합니다.\n"
-         "         <br>이에 편의를 위해 원문을 옆에 비치하였사오니 해석이 좀 이?상하다 싶으시면 참고하시기 바랍니다. 감사합니다.\n"
-         "      </p>\n",
+         "      <article>\n",
          dest) == EOF)
       raise_err("htmlgen: failed to fputs.");
 }
@@ -102,12 +114,13 @@ void print_contents(FILE *src, FILE *dest) {
 }
 
 void print_epilogue(FILE *dest, const char *title_name) {
-   // Note: 113 characters long
+   // Note: 136 characters long
    if (fprintf(dest,
+         "      </article>\n"
          "   </body>\n"
-         "   <script src=\"../navigator.js\"></script>\n"
+         "   <script src=\"../src/navigator.js\"></script>\n"
          "   <script>\n"
-         "      constructTOC(\"%s\");\n"
+         "      tailorDocument(\"%s\");\n"
          "   </script>\n"
          "</html>",
          title_name) < 0)
@@ -167,6 +180,7 @@ void process_line(FILE *dest, const char *line, prcs_ln_params *pptr) {
          else {
             pptr->tag_name = "p";
             put_plain_line(dest, pptr->tag_name, line, &pptr->tag_count);
+            put_partition(dest);
          }
          pptr->in_pre = false;
       }
@@ -187,7 +201,9 @@ void process_line(FILE *dest, const char *line, prcs_ln_params *pptr) {
          if (strlen(line) == 0)
             return;
          put_plain_line(dest, pptr->tag_name, line, &pptr->tag_count);
-         if (pptr->tag_count == 2) {
+         if (pptr->tag_count == 1)
+            put_partition(dest);
+         else if (pptr->tag_count == 2) {
             close_plaintext_div(dest);
             pptr->at_div_begin = true;
          }
@@ -197,16 +213,15 @@ void process_line(FILE *dest, const char *line, prcs_ln_params *pptr) {
 
 void open_plaintext_div(FILE *dest) {
    if (fputs(
-         "      <div class=\"plain-text\">\n",
+         "         <div class=\"plain-text\">\n",
          dest) == EOF)
       raise_err("htmlgen: failed to fputs.");
 }
 
 void open_codeblock_div(FILE *dest) {
    if (fputs(
-         "      <div class=\"code-block\">\n"
-         "         <pre>\n"
-         "\n",
+         "         <div class=\"code-block\">\n"
+         "            <pre>",
          dest) == EOF)
       raise_err("htmlgen: failed to fputs.");
 }
@@ -216,27 +231,33 @@ void put_plain_line(
    const char *tag_name, const char *line, int *tag_count_ptr
 ) {
    if (fprintf(dest,
-         "         <%s>%s</%s>\n",
+         "            <%s>%s</%s>\n",
          tag_name, line, tag_name) < 0)
       raise_err("htmlgen: failed to fprintf.");
    (*tag_count_ptr)++;
 }
 
+void put_partition(FILE *dest) {
+   if (fputs(
+         "            <div class=\"partition\"></div>\n",
+         dest) == EOF)
+      raise_err("htmlgen: failed to fpus.");
+}
+
 void put_code_line(FILE *dest, const char *line) {
-   if (fprintf(dest, "%s\n", line) < 0)
+   if (fprintf(dest, "\n%s", line) < 0)
       raise_err("htmlgen: failed to fprintf.");
 }
 
 void close_plaintext_div(FILE *dest) {
-   if (fputs("      </div>\n", dest) == EOF)
+   if (fputs("         </div>\n", dest) == EOF)
       raise_err("htmlgen: failed to fputs.");
 }
 
 void close_codeblock_div(FILE *dest) {
    if (fputs(
-         "         </pre>\n"
-         "         <p></p>\n"
-         "      </div>\n",
+         "</pre>\n"
+         "         </div>\n",
          dest) == EOF)
       raise_err("htmlgen: failed to fputs.");
 }
