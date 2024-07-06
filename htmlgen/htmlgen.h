@@ -15,10 +15,11 @@
 
 #define LINE_READ_UNIT 2048
 /* generator directives */
-#define GD_PRE_BEGIN    "gd::pre"
-#define GD_PRE_END      "gd::endpre"
-#define GD_H1           "gd::h1"
-#define GD_H2           "gd::h2"
+#define GD              "gd::"
+#define GD_PRE_BEGIN    GD "pre"
+#define GD_PRE_END      GD "endpre"
+#define GD_H1           GD "h1"
+#define GD_H2           GD "h2"
 
 typedef struct process_line_params_ {
    bool  at_div_begin;
@@ -81,9 +82,20 @@ char *get_line(FILE *src);
  * 
  * @param dest a destination file to write
  * @param line a line acquired from get_line()
+ * @param line_count the line count of this line
  * @param params_ptr a pointer to a struct which contains the necessary information to run
  */
-void process_line(FILE *dest, const char *line, prcs_ln_params *pptr);
+void handle_div_begin(FILE *dest, const char *line, int line_count, prcs_ln_params *pptr);
+
+/**
+ * @brief processes a line. If the line is a generator directive, this function performs relevant actions. If the line is a normal line, then this function prints it.
+ * 
+ * @param dest a destination file to write
+ * @param line a line acquired from get_line()
+ * @param line_count the line count of this line
+ * @param params_ptr a pointer to a struct which contains the necessary information to run
+ */
+void handle_div_inside(FILE *dest, const char *line, int line_count, prcs_ln_params *pptr);
 
 /**
  * @brief prints the opening part of the plain-text div.

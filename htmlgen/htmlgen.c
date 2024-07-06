@@ -6,6 +6,8 @@
 #define WIN32
 #include "htmlgen.h"
 
+const char *error_msg = "htmlgen: \033[1;31mprocessing halted!\033[0m\n\033[4mREASON\033[0m";
+
 int main(int argc, char *argv[]) {
    if (argc != 4) raise_err(
       "htmlgen: usage: htmlgen input.txt output.html FILE_NAME\n"
@@ -100,17 +102,24 @@ void print_prologue(FILE *dest) {
 
 void print_contents(FILE *src, FILE *dest) {
    prcs_ln_params params;
+   int line_count;
 
    params.at_div_begin = true;
+   line_count = 0;
    while (!feof(src)) {
       char *line;
 
       line = get_line(src);
       if (line == NULL)
-         return;
-      process_line(dest, line, &params);
+         break;
+      if (params.at_div_begin)
+         handle_div_begin(dest, line, ++line_count, &params);
+      else
+         handle_div_inside(dest, line, ++line_count, &params);
       free(line);
    }
+   if (!params.at_div_begin)
+      raise_err("%s reached to eof but div is not closed.", error_msg);
 }
 
 void print_epilogue(FILE *dest, const char *title_name) {
@@ -138,10 +147,10 @@ char *get_line(FILE *src) {
    line_cur_idx = 0;
 
    while (fgets(line + line_cur_idx, LINE_READ_UNIT, src) != NULL) {
-      const int line_len = strlen(line);
+      const int  line_len    = strlen(line);
       const bool end_of_line = line[line_len - 1] == '\n';
       const bool end_of_file = feof(src) ? true : false;
-      const bool line_ended = end_of_line || end_of_file;
+      const bool line_ended  = end_of_line || end_of_file;
 
       if (line_ended) {
          line[strcspn(line, NEWLINE_MARK)] = '\0';
@@ -159,54 +168,71 @@ char *get_line(FILE *src) {
       raise_err("htmlgen: error during fgets.");
    
    // tried fgets but met EOF immediately
+   free(line);
    return NULL;
 }
 
-void process_line(FILE *dest, const char *line, prcs_ln_params *pptr) {
-   if (pptr->at_div_begin) {
-      if (strlen(line) == 0)
-         return;
-      if (strcmp(line, GD_PRE_BEGIN) == 0) {
-         open_codeblock_div(dest);
-         pptr->in_pre = true;
-      }
-      else {
-         open_plaintext_div(dest);
-         pptr->tag_count = 0;
-         if (strcmp(line, GD_H1) == 0)
-            pptr->tag_name = "h1";
-         else if (strcmp(line, GD_H2) == 0)
-            pptr->tag_name = "h2";
-         else {
-            pptr->tag_name = "p";
-            put_plain_line(dest, pptr->tag_name, line, &pptr->tag_count);
-            put_partition(dest);
-         }
-         pptr->in_pre = false;
-      }
-      pptr->at_div_begin = false;
+void handle_div_begin(FILE *dest, const char *line, int line_count,
+                      prcs_ln_params *pptr) {
+   if (strlen(line) == 0)
+      return;
+   if (strcmp(line, GD_PRE_BEGIN) == 0) {
+      open_codeblock_div(dest);
+      pptr->in_pre = true;
    }
    else {
-      if (pptr->in_pre) {
-         if (strcmp(line, GD_PRE_END) == 0) {
-            close_codeblock_div(dest);
-            pptr->at_div_begin = true;
-         }
-         else if (strlen(line) == 0)
-            put_code_line(dest, "");
-         else
-            put_code_line(dest, line);
-      }
+      const int gd_len = strlen(GD);
+
+      open_plaintext_div(dest);
+      pptr->tag_count = 0;
+      if (strcmp(line, GD_H1) == 0)
+         pptr->tag_name = "h1";
+      else if (strcmp(line, GD_H2) == 0)
+         pptr->tag_name = "h2";
+      else if (strncmp(line, GD, gd_len) == 0)
+         raise_err("%s unknown generator directive '%s' at line %d.",
+            error_msg, line + gd_len, line_count);
       else {
-         if (strlen(line) == 0)
-            return;
+         pptr->tag_name = "p";
          put_plain_line(dest, pptr->tag_name, line, &pptr->tag_count);
-         if (pptr->tag_count == 1)
-            put_partition(dest);
-         else if (pptr->tag_count == 2) {
-            close_plaintext_div(dest);
-            pptr->at_div_begin = true;
-         }
+         put_partition(dest);
+      }
+      pptr->in_pre = false;
+   }
+   pptr->at_div_begin = false;
+}
+
+void handle_div_inside(FILE *dest, const char *line, int line_count,
+                       prcs_ln_params *pptr) {
+   const int gd_len = strlen(GD);
+   
+   if (pptr->in_pre) {
+      if (strcmp(line, GD_PRE_END) == 0) {
+         close_codeblock_div(dest);
+         pptr->at_div_begin = true;
+      }
+      else if (strncmp(line, GD, gd_len) == 0)
+         raise_err("%s expected either a normal line or an endpre directive "
+            "but encountered a generator directive '%s' at line %d.",
+            error_msg, line + gd_len, line_count);
+      else if (strlen(line) == 0)
+         put_code_line(dest, "");
+      else
+         put_code_line(dest, line);
+   }
+   else {
+      if (strlen(line) == 0)
+         return;
+      if (strncmp(line, GD, gd_len) == 0)
+         raise_err("%s expected a normal line but encountered a generator "
+            "directive '%s' at line %d.",
+            error_msg, line + gd_len, line_count);
+      put_plain_line(dest, pptr->tag_name, line, &pptr->tag_count);
+      if (pptr->tag_count == 1)
+         put_partition(dest);
+      else if (pptr->tag_count == 2) {
+         close_plaintext_div(dest);
+         pptr->at_div_begin = true;
       }
    }
 }
