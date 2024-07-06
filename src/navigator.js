@@ -7,20 +7,20 @@ const navIntroData = [
    content("자주 나오는 질문들", "faq")
 ];
 const navMainData = [
-   content("소개", "introduction"),
-   content("시작하기", "starting-out"),
-   content("타입과 타입클래스", "types-and-typeclasses"),
-   content("함수에서의 구문", "syntax-in-functions"),
-   content("재귀", "recursion"),
-   content("고차함수", "higher-order-functions"),
-   content("모듈", "modules"),
-   content("사용자 정의 타입과\n타입클래스", "making-our-own-types-and-typeclasses"),
-   content("입출력", "input-and-output"),
-   content("함수적으로 문제 해결하기", "functionally-solving-problems"),
-   content("함자, 응용 함자,\n그리고 모노이드", "functors-applicative-functors-and-monoids"),
-   content("모나드", "a-fistful-of-monads"),
-   content("모나드 심화", "or-a-few-monads-more"),
-   content("지퍼", "zippers"),
+   content("소개", "introduction.html"),
+   content("시작하기", "starting-out.html"),
+   content("타입과 타입클래스", "types-and-typeclasses.html"),
+   content("함수에서의 구문", "syntax-in-functions.html"),
+   content("재귀", "recursion.html"),
+   content("고차함수", "higher-order-functions.html"),
+   content("모듈", "modules.html"),
+   content("사용자 정의 타입과\n타입클래스", "making-our-own-types-and-typeclasses.html"),
+   content("입출력", "input-and-output.html"),
+   content("함수적으로 문제 해결하기", "functionally-solving-problems.html"),
+   content("함자, 응용 함자,\n그리고 모노이드", "functors-applicative-functors-and-monoids.html"),
+   content("모나드", "a-fistful-of-monads.html"),
+   content("모나드 심화", "or-a-few-monads-more.html"),
+   content("지퍼", "zippers.html"),
 ];
 
 /**
