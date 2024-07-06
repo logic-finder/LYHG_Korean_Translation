@@ -10,11 +10,24 @@ const char *error_msg = "htmlgen: \033[1;31mprocessing halted!\033[0m\n\033[4mRE
 
 int main(int argc, char *argv[]) {
    if (argc != 4) raise_err(
-      "htmlgen: usage: htmlgen input.txt output.html FILE_NAME\n"
-      "argv[3] is required to call a function in navigator.js.");
+      "htmlgen: usage: htmlgen input.txt OUTPUT_PATH FILE_NAME.html");
 
-   FILE *src  = open_file(argv[1], "r");
-   FILE *dest = open_file(argv[2], "w");
+   char *dest_path;
+   const int argv2_len = strlen(argv[2]);
+   const int argv3_len = strlen(argv[3]);
+   const int dest_path_len = argv2_len + 1 + argv3_len + 1;
+   
+   dest_path = malloc(dest_path_len);
+   if (dest_path == NULL)
+      raise_err("htmlgen: failed to malloc.");
+   if (snprintf(dest_path, dest_path_len, "%s/%s", argv[2], argv[3]) < 0)
+      raise_err("htmlgen: failed to snprintf.");
+
+   FILE *src, *dest;
+
+   src  = open_file(argv[1], "r");
+   dest = open_file(dest_path, "w");
+   free(dest_path);
 
    print_prologue(dest);
    print_contents(src, dest);
@@ -37,16 +50,15 @@ void raise_err(const char *err_msg, ...) {
 }
 
 FILE *open_file(const char *filename, const char *mode) {
-   const char *current_dir = "./";
-   const int current_dir_len = 2;
    const int filename_len = strlen(filename);
    char *path;
+   const int path_len = 2 + filename_len + 1;
 
-   path = malloc(current_dir_len + filename_len + 1);
+   path = malloc(path_len);
    if (path == NULL)
       raise_err("htmlgen: failed to malloc.");
-   strncpy(path, current_dir, current_dir_len + 1);
-   strncat(path, filename, filename_len);
+   if (snprintf(path, path_len, "./%s", filename) < 0)
+      raise_err("htmlgen: failed to snprintf.");
 
    FILE *fp;
    
