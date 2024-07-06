@@ -1,0 +1,607 @@
+gd::h1
+함수에서의 구문
+Syntax in Functions
+
+gd::h2
+패턴 매칭
+Pattern matching
+
+이 장은 하스켈의 멋진 구문론적 구성체들 중 몇 가지를 다룰 것이며, 이에 우리는 패턴 매칭에서부터 시작하도록 하겠습니다. 패턴 매칭이라고 하는 것은, 다음의 요소들로 이루어져 있습니다. 즉, 데이터가 준수해야 하는 패턴을 식별하고 데이터가 정말로 그 패턴을 준수하는지 확인하며 그러한 패턴에 따라 데이터를 해체하는 것입니다.
+
+This chapter will cover some of Haskell's cool syntactic constructs and we'll start with pattern matching. Pattern matching consists of specifying patterns to which some data should conform and then checking to see if it does and deconstructing the data according to those patterns.
+
+함수를 정의할 때, 여러분은 각기 다른 패턴을 위해 별도의 함수 본체를 정의할 수 있습니다. 이렇게 하는 것은 단순하고 가독성있는 정말로 깔끔한 코드로 이어집니다. 여러분은 임의의 데이터 타입에 패턴매칭을 할 수 있습니다. 이를테면, 숫자, 문자, 리스트, 튜플 등입니다. 우선, 매우 간단한 함수 하나를 만들어 봅시다. 이 함수는 우리가 제공한 숫자가 7인지 아닌지를 검사합니다.
+
+When defining functions, you can define separate function bodies for different patterns. This leads to really neat code that's simple and readable. You can pattern match on any data type — numbers, characters, lists, tuples, etc. Let's make a really trivial function that checks if the number we supplied to it is a seven or not.
+
+gd::pre
+lucky :: (Integral a) => a -> String
+lucky 7 = "행운의 숫자 7입니다!"
+lucky x = "대단히 유감입니다만, 행운의 여신이 여러분으로부터 \
+          \등을 돌린 것 같군요ㅋ"
+
+역주: 이대로 ghci상에서 호출하게 되면 한글이 나오지 않으므로 putStrLn (lucky 7) 과 같은 식으로 호출하면 되는 듯 합니다.
+gd::endpre
+
+여러분이 <code>lucky</code>를 호출할 때, 패턴들은 위에서부터 아래로 검사될 것이며 어떤 패턴과 일치할 때, 그에 상응하는 함수 본체가 사용될 것입니다. 하나의 숫자가 위의 첫번째 패턴과 일치할 수 있는 유일한 방법은 숫자가 7일 때만입니다. 만약 7이 아니라면, 첫번째 검사는 실패하게 되고 이에 두번째 패턴으로 가게 되는데, 두번째 패턴은 임의의 숫자를 매칭하고 그 숫자를 x에 속박합니다. 이 함수는 또한 if문을 사용해서도 구현될 수 있었습니다. 하지만 만약 우리가 1부터 5까지의 숫자를 말하고 그 밖의 다른 숫자에 대해서는 "1과 5 사이에 있지 않음"이라고 말하는 함수를 원한다면 어떡할까요? 패턴 매칭이 없다면, 우리는 아주 난해한 if then else 트리를 만들어야 할 것입니다. 그러나, 패턴 매칭이 있다면:
+
+When you call lucky, the patterns will be checked from top to bottom and when it conforms to a pattern, the corresponding function body will be used. The only way a number can conform to the first pattern here is if it is 7. If it's not, it falls through to the second pattern, which matches anything and binds it to x. This function could have also been implemented by using an if statement. But what if we wanted a function that says the numbers from 1 to 5 and says "Not between 1 and 5" for any other number? Without pattern matching, we'd have to make a pretty convoluted if then else tree. However, with it:
+
+gd::pre
+sayMe :: (Integral a) => a -> String
+sayMe 1 = "One!"
+sayMe 2 = "Two!"
+sayMe 3 = "Three!"
+sayMe 4 = "Four!"
+sayMe 5 = "Five!"
+sayMe x = "Not between 1 and 5"
+gd::endpre
+
+만약 우리가 마지막 패턴 ("광범위"한 패턴) 을 맨 위로 옮겼다면, 이 함수는 항상 "1과 5 사이에 없음"을 말하게 될 것임에 주목하십시오. 이렇게 되는 이유는 이 패턴이 모든 숫자를 받아들일 것이고 따라서 숫자들은 다른 패턴으로 내려가서 검사될 기회를 갖지 못하기 때문입니다.
+
+Note that if we moved the last pattern (the catch-all one) to the top, it would always say "Not between 1 and 5", because it would catch all the numbers and they wouldn't have a chance to fall through and be checked for any other patterns.
+
+지난번에 우리가 구현했던 팩토리얼 함수를 기억하십니까? 우리는 어떤 숫자 n의 팩토리얼을 <code>product [1..n]</code>으로서 정의했었습니다. 우리는 팩토리얼 함수를 또한 <em>재귀적</em>으로도 정의할 수 있으며, 이 편이 팩토리얼이 수학에서 보통 정의되는 방식입니다. 우리는 0의 팩토리얼이 1이라고 말함으로써 시작합니다. 그리고나서 우리는 임의의 양의 정수의 팩토리얼은 그 정수에 그 정수의 이전 수의 팩토리얼을 곱한 것이라고 나타냅니다. 하스켈의 용어로 이를 표현해보면 다음과 같습니다:
+
+Remember the factorial function we implemented previously? We defined the factorial of a number n as product [1..n]. We can also define a factorial function <em>recursively</em>, the way it is usually defined in mathematics. We start by saying that the factorial of 0 is 1. Then we state that the factorial of any positive integer is that integer multiplied by the factorial of its predecessor. Here's how that looks like translated in Haskell terms.
+
+gd::pre
+factorial :: (Integral a) => a -> a
+factorial 0 = 1
+factorial n = n * factorial (n - 1)
+gd::endpre
+
+이것이 바로 우리가 재귀적으로 정의해본 첫번째 함수입니다. 재귀는 하스켈에서 중요하며 우리는 추후에 재귀를 좀 더 자세히 들여다 볼 것입니다. 하지만 간단히 말해서, 만약 우리가, 예를 들어 3의 팩토리얼을 구하려고 한다면, 바로 다음과 같은 일이 발생합니다. 먼저 3 * factorial 2의 계산이 시도됩니다. 2의 팩토리얼은 2 * factorial 1이므로, 이를 합쳐보면 3 * (2 * factorial 1)이 됩니다. factorial 1은 1 * factorial 0이니까, 이를 다시 합쳐보면 3 * (2 * (1 * factorial 0))이 됩니다. 이제 여기서 묘수가 등장합니다. 우리는 0의 팩토리얼을 단지 1로 정의했고, 이 패턴을 "광범위"한 패턴 이전에 만났기 때문에, 단순히 1이 반환됩니다. 따라서 최종 결과는 3 * (2 * (1 * 1))과 같습니다. 만약 우리가 저 두번째 패턴을 첫번째 패턴 위에 작성했더라면, 모든 숫자가 걸려들었을 것이고, 물론 0도 포함해서, 그래서 우리의 계산은 결코 종료되지 않았을 것입니다. 이것이 바로 패턴을 명시할 때 순서가 중요한 이유이며, 가장 특수한 패턴들을 먼저 명시하고 좀 더 일반적인 패턴들을 뒤에 명시하는 것이 무조건 최선입니다.
+
+This is the first time we've defined a function recursively. Recursion is important in Haskell and we'll take a closer look at it later. But in a nutshell, this is what happens if we try to get the factorial of, say, 3. It tries to compute 3 * factorial 2. The factorial of 2 is 2 * factorial 1, so for now we have 3 * (2 * factorial 1). factorial 1 is 1 * factorial 0, so we have 3 * (2 * (1 * factorial 0)). Now here comes the trick — we've defined the factorial of 0 to be just 1 and because it encounters that pattern before the catch-all one, it just returns 1. So the final result is equivalent to 3 * (2 * (1 * 1)). Had we written the second pattern on top of the first one, it would catch all numbers, including 0 and our calculation would never terminate. That's why order is important when specifying patterns and it's always best to specify the most specific ones first and then the more general ones later.
+
+패턴 매칭은 또한 실패할수도 있습니다. 만약 우리가 함수를 다음과 같이 정의한다면:
+
+Pattern matching can also fail. If we define a function like this:
+
+gd::pre
+charName :: Char -> String
+charName 'a' = "Albert"
+charName 'b' = "Broseph"
+charName 'c' = "Cecil"
+gd::endpre
+
+그리고나서 우리가 예상하지 못했던 입력으로 함수를 호출하려고 하면, 다음과 같은 일이 발생합니다:
+
+and then try to call it with an input that we didn't expect, this is what happens:
+
+gd::pre
+ghci> charName 'a'
+"Albert"
+ghci> charName 'b'
+"Broseph"
+ghci> charName 'h'
+"*** Exception: tut.hs:(53,0)-(55,21): Non-exhaustive patterns in function charName
+gd::endpre
+
+우리가 완전하지 않은 패턴을 가지고 있다는 불평이며, 실제로 그렇습니다. 패턴을 만들 때, 우리는 항상 "광범위"한 패턴을 포함해야 합니다. 그리하여 우리의 프로그램이 예상하지 못한 입력을 받아도 고장나지 않도록.
+
+It complains that we have non-exhaustive patterns, and rightfully so. When making patterns, we should always include a catch-all pattern so that our program doesn't crash if we get some unexpected input.
+
+패턴 매칭은 또한 튜플에도 사용될 수 있습니다. 만약 우리가 2D 공간에서 (쌍의 형태로) 두 개의 벡터를 취해서 서로 더하는 함수를 만들고 싶으면 어떡할까요? 두 벡터를 더하기 위해서, 우리는 벡터의 x성분을 따로 더하고 y성분을 따로 더합니다. 만약 우리가 패턴 매칭에 대해 몰랐다면 우리는 다음과 같이 작성했을 것입니다.
+
+Pattern matching can also be used on tuples. What if we wanted to make a function that takes two vectors in a 2D space (that are in the form of pairs) and adds them together? To add together two vectors, we add their x components separately and then their y components separately. Here's how we would have done it if we didn't know about pattern matching:
+
+gd::pre
+addVectors :: (Num a) => (a, a) -> (a, a) -> (a, a)
+addVectors a b = (fst a + fst b, snd a + snd b)
+gd::endpre
+
+물론, 작동은 하지만, 이를 수행하기 위한 더 좋은 방법이 있습니다. 패턴 매칭을 사용하도록 위의 함수를 개량해 봅시다.
+
+Well, that works, but there's a better way to do it. Let's modify the function so that it uses pattern matching.
+
+gd::pre
+addVectors :: (Num a) => (a, a) -> (a, a) -> (a, a)
+addVectors (x1, y1) (x2, y2) = (x1 + x2, y1 + y2)
+gd::endpre
+
+다 됐습니다! 더 낫습니다. 이것이 이미 하나의 "광범위"한 패턴임에 주목하십시오. <code>addVectors</code>의 타입은 (두 경우 모두) <code>addVectors :: (Num a) => (a, a) -> (a, a) - > (a, a)</code>라서, 우리는 확실하게 두 개의 쌍을 매개변수로서 받습니다.
+
+There we go! Much better. Note that this is already a catch-all pattern. The type of addVectors (in both cases) is addVectors :: (Num a) => (a, a) -> (a, a) - > (a, a), so we are guaranteed to get two pairs as parameters.
+
+<code>fst</code>와 <code>snd</code>는 쌍의 요소들을 추출합니다. 하지만 triple에 대해서는 어떻습니까? 이에 대해 제공된 함수는 없지만 우리만의 함수를 만들 수 있습니다.
+
+fst and snd extract the components of pairs. But what about triples? Well, there are no provided functions that do that but we can make our own.
+
+gd::pre
+first :: (a, b, c) -> a
+first (x, _, _) = x
+
+second :: (a, b, c) -> b
+second (_, y, _) = y
+
+third :: (a, b, c) -> c
+third (_, _, z) = z
+gd::endpre
+
+<code>_</code>는 list comprehension에서와 같은 것을 의미합니다. 이것은 우리가 그 부분이 무엇인지 정말로 상관하지 않는다는 것을 의미하므로, 우리는 단지 <code>_</code>를 작성합니다.
+
+The _ means the same thing as it does in list comprehensions. It means that we really don't care what that part is, so we just write a _.
+
+지금 기억났는데, 여러분은 또한 list comprehension에서도 패턴매칭할 수 있습니다. 다음을 확인해 보십시오:
+
+Which reminds me, you can also pattern match in list comprehensions. Check this out:
+
+gd::pre
+ghci> let xs = [(1,3), (4,3), (2,4), (5,3), (5,6), (3,1)]
+ghci> [a+b | (a,b) <- xs]
+[4,7,6,8,11,4]
+gd::endpre
+
+혹시라도 패턴 매칭이 실패한다면, 그냥 다음 원소로 이동될 것입니다.
+
+Should a pattern match fail, it will just move on to the next element.
+
+리스트 그 자체도 또한 패턴 매칭에서 사용될 수 있습니다. 여러분은 빈 리스트 <code>[]</code> 혹은 <code>:</code>와 빈 리스트를 포함하는 임의의 패턴과 매칭할 수 있습니다. 하지만 <code>[1,2,3]</code>은 단지 <code>1:2:3:[]</code>의 문법적 설탕이기 때문에, 여러분은 또한 전자의 패턴을 사용할 수도 있습니다. x:xs와 같은 패턴은, 오직 하나의 원소밖에 없어서 xs가 빈 리스트인 경우로 된다고 할 지라도, 리스트의 head를 x에 속박하고 리스트의 나머지를 xs에 속박할 것입니다.
+
+Lists themselves can also be used in pattern matching. You can match with the empty list [] or any pattern that involves : and the empty list. But since [1,2,3] is just syntactic sugar for 1:2:3:[], you can also use the former pattern. A pattern like x:xs will bind the head of the list to x and the rest of it to xs, even if there's only one element so xs ends up being an empty list.
+
+노트: 이 x:xs 패턴은 많이 사용되며, 특히 재귀함수에서 그렇습니다. 하지만 <code>:</code>를 포함하는 패턴들은 길이가 1 혹은 그 이상인 리스트에 대해서만 매칭됩니다.
+
+Note: The x:xs pattern is used a lot, especially with recursive functions. But patterns that have : in them only match against lists of length 1 or more.
+
+만약 여러분이, 예를 들어 처음 세 개의 원소들을 변수들에 속박하고 리스트의 나머지를 다른 변수에 속박하고 싶다면, 여러분은 <code>x:y:z:zs</code>와 같이 사용할 수 있습니다. 이것은 오직 세 원소 혹은 그 이상을 가진 리스트들에 대해서만 매칭됩니다.
+
+If you want to bind, say, the first three elements to variables and the rest of the list to another variable, you can use something like x:y:z:zs. It will only match against lists that have three elements or more.
+
+이제 우리는 어떻게 리스트에 대해서 패턴매칭하는지 알았으니, <code>head</code> 함수에 대해 우리만의 구현을 만들어 봅시다.
+
+Now that we know how to pattern match against list, let's make our own implementation of the head function.
+
+gd::pre
+head' :: [a] -> a
+head' [] = error "Can't call head on an empty list, dummy!"
+head' (x:_) = x
+
+역주: 2번째 줄 문자열은 "실례지만 빈 리스트에 head 함수를 호출하실 수 없습니다." 라는 뜻입니다.
+gd::endpre
+
+이것이 작동하는지 확인하기:
+
+Checking if it works:
+
+gd::pre
+ghci> head' [4,5,6]
+4
+ghci> head' "Hello"
+'H'
+gd::endpre
+
+기분 굿! 만약 여러분이 여러 변수들에 속박하기를 원한다면 (그 변수들 중 하나가 단지 _이고 실제로는 전혀 속박하지 않는다 해도), 우리는 그 변수들을 괄호로 둘러싸야 함에 주의하십시오. 또한 우리가 사용한 <code>error</code>함수에 주의하십시오. 이 함수는 하나의 문자열을 취하고 런타임 오류를 발생시키는데, 해당 문자열은 어떤 종류의 오류가 발생했는지에 대한 정보로써 사용됩니다. 이 함수는 프로그램을 멈추게 하므로, 이를 너무 자주 사용하는 것은 좋지 않습니다. 하지만 <code>head</code>를 빈 리스트에 호출하는 것은 말이 되지 않습니다.
+
+Nice! Notice that if you want to bind to several variables (even if one of them is just _ and doesn't actually bind at all), we have to surround them in parentheses. Also notice the error function that we used. It takes a string and generates a runtime error, using that string as information about what kind of error occurred. It causes the program to crash, so it's not good to use it too much. But calling head on an empty list doesn't make sense.
+
+(불)편한 영어의 형태로 있는 리스트의 처음 원소들 중 몇 개를 말해주는 간단한 함수를 만들어 봅시다.
+
+Let's make a trivial function that tells us some of the first elements of the list in (in)convenient English form.
+
+gd::pre
+tell :: (Show a) => [a] -> String
+tell [] = "The list is empty"
+tell (x:[]) = "The list has one element: " ++ show x
+tell (x:y:[]) = "The list has two elements: " ++ show x ++ " and " ++ show y
+tell (x:y:_) = "This list is long. The first two elements are: " ++ show x ++ " and " ++ show y
+gd::endpre
+
+이 함수는 안전한데 왜냐하면 이 함수는 빈 리스트, 원소가 하나만 있는 리스트, 두 개의 원소가 있는 리스트, 그리고 두 개의 원소 이상을 가진 리스트를 다루기 때문입니다. <code>(x:[])</code>와 <code>(x:y:[])</code>는 <code>[x]</code>와 <code>[x,y]</code>로 재작성될수도 있다는 점에 주목하십시오 (문법적 설탕이므로, 괄호가 필요하지 않습니다). 우리는 <code>(x:y:_)</code>를 대괄호로 재작성할 수 없는데 이는 길이가 2 이상인 임의의 리스트를 매칭하기 때문입니다.
+
+This function is safe because it takes care of the empty list, a singleton list, a list with two elements and a list with more than two elements. Note that (x:[]) and (x:y:[]) could be rewriten as [x] and [x,y] (because its syntatic sugar, we don't need the parentheses). We can't rewrite (x:y:_) with square brackets because it matches any list of length 2 or more.
+
+우리는 list comprehension을 사용해 이미 우리만의 <code>length</code>함수를 구현했습니다. 이제 우리는 이 함수를 패턴 매칭과 조금의 재귀를 사용해 구현할 것입니다.
+
+We already implemented our own length function using list comprehension. Now we'll do it by using pattern matching and a little recursion:
+
+이것은 우리가 앞서 작성했던 팩토리얼 함수와 유사합니다. 우선 우리는 알고 있는 입력, 즉 빈 리스트의 결과를 정의하였습니다. 이것은 또한 edge condition으로도 알려져 있습니다. 이후 두번째 패턴에서 우리는 리스트를 head와 tail로 나눔으로써 리스트를 분해했습니다. 우리는 리스트의 길이는 1 더하기 tail의 길이와 같다고 말했습니다. 우리는 <code>_</code>를 사용해 head를 매칭했는데 그 이유는 우리는 그것이 실제로 무엇인지 상관하지 않기 때문입니다. 또한 우리가 리스트의 모든 가능한 패턴을 다뤘다는 것에 주목하십시오. 저 첫번째 패턴은 빈 리스트를 매칭하며 두번째 패턴은 빈 리스트가 아닌 임의의 리스트를 매칭합니다.
+
+This is similar to the factorial function we wrote earlier. First we defined the result of a known input — the empty list. This is also known as the edge condition. Then in the second pattern we take the list apart by splitting it into a head and a tail. We say that the length is equal to 1 plus the length of the tail. We use _ to match the head because we don't actually care what it is. Also note that we've taken care of all possible patterns of a list. The first pattern matches an empty list and the second one matches anything that isn't an empty list.
+
+만약 우리가 <code>length'</code>를 "ham"에 호출하면 무엇이 일어날지 관찰해 봅시다. 우선, 이 함수는 이 문자열이 빈 리스트인지 검사할 것입니다. 빈 리스트가 아니기 때문에, 두번째 패턴으로 가게 됩니다. 함수는 두번째 패턴에서 매칭되고 그 길이는 <code>1 + length' "am"</code>이라고 말하는데, 왜냐하면 우리가 리스트를 head와 tail로 쪼개고 head를 버렸기 때문입니다. 좋습니다. "am"의 length'는, 유사하게, <code>1 + length' "m"</code>입니다. 그래서 지금 우리는 <code>1 + (1 + length' "m")</code>을 얻었습니다. <code>length' "m"</code>은 <code>1 + length' ""</code>입니다 (또한 <code>1 + length' []</code>로도 작성될 수 있습니다). 그리고 우리는 <code>length' []</code>는 0이라고 정의한 바 있습니다. 그래서 결론적으로 우리는 1 + (1 + (1 + 0))을 가지게 됩니다.
+
+Let's see what happens if we call length' on "ham". First, it will check if it's an empty list. Because it isn't, it falls through to the second pattern. It matches on the second pattern and there it says that the length is 1 + length' "am", because we broke it into a head and a tail and discarded the head. O-kay. The length' of "am" is, similarly, 1 + length' "m". So right now we have 1 + (1 + length' "m"). length' "m" is 1 + length' "" (could also be written as 1 + length' []). And we've defined length' [] to be 0. So in the end we have 1 + (1 + (1 + 0)).
+
+<code>sum</code>을 구현해 봅시다. 우리는 빈 리스트의 합계는 0이라는 것을 알고 잇습니다. 우리는 그것을 하나의 패턴으로서 작성합니다. 그리고 우리는 또한 리스트의 합계는 head 더하기 리스트의 나머지의 합계라는 것을 알고 있습니다. 그래서 만약 우리가 그것을 작성한다면, 다음을 얻습니다:
+
+Let's implement sum. We know that the sum of an empty list is 0. We write that down as a pattern. And we also know that the sum of a list is the head plus the sum of the rest of the list. So if we write that down, we get:
+
+gd::pre
+sum' :: (Num a) => [a] -> a
+sum' [] = 0
+sum' (x:xs) = x + sum' xs
+gd::endpre
+
+또한 <em>as patterns (역주: 패턴으로서)</em> 라고 불리는 것이 있습니다. 이것들은 뭔가를 어떤 패턴에 따라 해체하고, 해체된 것들을 이름들에 속박하는 한편 여전히 전체에 대한 참조를 유지하는 유용한 방법입니다. 여러분은 이름과 @를 패턴의 앞에 놓음으로써 이것을 합니다. 예를 들자면, 패턴 xs@(x:y:ys)이 있습니다. 이 패턴은 x:y:ys와 정확히 같은 것을 매칭할 것이지만 여러분은 함수 본체 내에서 x:y:ys를 다시 입력하며 똑같은 작업을 반복하는 대신 xs를 통해 전체 리스트를 쉽게 얻을 수 있습니다. 빠르고 더러운 예제를 하나 보자면:
+
+There's also a thing called <em>as patterns</em>. Those are a handy way of breaking something up according to a pattern and binding it to names whilst still keeping a reference to the whole thing. You do that by putting a name and an @ in front of a pattern. For instance, the pattern xs@(x:y:ys). This pattern will match exactly the same thing as x:y:ys but you can easily get the whole list via xs instead of repeating yourself by typing out x:y:ys in the function body again. Here's a quick and dirty example:
+
+gd::pre
+capital :: String -> String
+capital "" = "Empty string, whoops!"
+capital all@(x:xs) = "The first letter of " ++ all ++ " is " ++ [x]
+
+ghci> capital "Dracula"
+"The first letter of Dracula is D"
+gd::endpre
+
+보통 우리는 as patterns를 큰 패턴에 대해 매칭할 때 함수 본체 내에서 전체를 다시 사용해야 할 때 똑같은 작업을 반복하는 것을 피하기 위해 사용합니다.
+
+Normally we use as patterns to avoid repeating ourselves when matching against a bigger pattern when we have to use the whole thing again in the function body.
+
+한 가지 더. 여러분은 <code>++</code>를 패턴 매칭에서 사용할 수 없습니다. 만약 여러분이 (xs ++ ys)에 대해 패턴매칭하려고 시도한다면, 무엇이 첫번째 리스트에 들어가게 되고 무엇이 두번째 리스트에 들어가게 될까요? 정말로 말이 되지 않습니다. (xs ++ [x,y,z]) 혹은 단순히 (xs ++ [x])에 대해 뭔가를 매칭하는 것은 말이 될 것 같지만, 리스트의 성질 때문에, 저것을 할 수는 없습니다. (역주: 추측이지만 리스트는 길이가 무한할 수 있기 때문에 그런 게 아닐지?)
+
+One more thing — you can't use ++ in pattern matches. If you tried to pattern match against (xs ++ ys), what would be in the first and what would be in the second list? It doesn't make much sense. It would make sense to match stuff against (xs ++ [x,y,z]) or just (xs ++ [x]), but because of the nature of lists, you can't do that.
+
+gd::h2
+근위대, 근위대!
+Guards, guards!
+
+패턴이란 것이 어떤 값이 어떤 형태를 따른다는 것을 확실히 하고 그 값을 해체하는 방법이라면, 「가드」란 어떤 값의 어떤 속성 (혹은 속성들 중 여러 개) 이 참인지 거짓인지를 판별하는 방법입니다. 이 말은 마치 if문처럼 들리고 또 매우 비슷합니다. 눈여겨볼 점은 가드는 여러 개의 조건이 있을 때 더욱 읽기 쉽고 가드는 패턴과 정말 잘 어울립니다.
+
+Whereas patterns are a way of making sure a value conforms to some form and deconstructing it, guards are a way of testing whether some property of a value (or several of them) are true or false. That sounds a lot like an if statement and it's very similar. The thing is that guards are a lot more readable when you have several conditions and they play really nicely with patterns.
+
+가드의 구문을 설명하는 대신, 일단 한 번 가드를 사용해 함수를 만들어 봅시다. 우리는 여러분의 BMI (체질량 지수) 에 따라 여러분을 각기 다른 방식으로 마구 욕하는 간단한 함수를 만들 것입니다. 여러분의 BMI는 여러분의 몸무게를 여러분의 키를 제곱한 것으로 나눈 것과 같습니다. 만약 여러분의 BMI가 18.5보다 작다면, 여러분은 저체중인 것으로 여겨집니다. 만약 18.5부터 25의 어딘가에 있다면, 정상으로 간주됩니다. 25부터 30까지는 과체중이며 30 위로는 비만입니다. 따라서 이 함수는 다음과 같이 구현됩니다 (BMI를 당장은 계산하지 않을 것입니다. 이 함수는 다만 BMI를 취해서 호통을 칠 뿐입니다)
+
+Instead of explaining their syntax, let's just dive in and make a function using guards. We're going to make a simple function that berates you differently depending on your BMI (body mass index). Your BMI equals your weight divided by your height squared. If your BMI is less than 18.5, you're considered underweight. If it's anywhere from 18.5 to 25 then you're considered normal. 25 to 30 is overweight and more than 30 is obese. So here's the function (we won't be calculating it right now, this function just gets a BMI and tells you off)
+
+gd::pre
+bmiTell :: (RealFloat a) => a -> String
+bmiTell bmi
+    | bmi <= 18.5 = "You're underweight, you emo, you!"
+    | bmi <= 25.0 = "You're supposedly normal. Pffft, I bet you're ugly!"
+    | bmi <= 30.0 = "You're fat! Lose some weight, fatty!"
+    | otherwise   = "You're a whale, congratulations!"
+gd::endpre
+
+가드는 파이프로 표시되며 파이프의 뒤로는 함수의 이름과 함수의 매개변수가 뒤따릅니다. 보통, 가드는 오른쪽으로 살짝 들여 써지며 일렬로 맞춰집니다. 가드는 기본적으로 부울 표현식입니다. 만약 이 표현식이 <code>True</code>로 평가되면, 그에 해당하는 함수 본체가 사용됩니다. 만약 표현식이 <code>False</code>로 평가되면, 검사는 다음에 있는 가드로 계속 내려가는 식입니다. 만약 우리가 이 함수를 24.3으로 호출하면, 이 함수는 우선 24.3이 18.5보다 작거나 같은지 확인할 것입니다. 작거나 같지 않으므로, 다음 가드로 내려갑니다. 검사는 이 두번째 가드에서 수행되며 24.3은 25보다 작기 때문에, 두 번째 문자열이 반환됩니다.
+
+Guards are indicated by pipes that follow a function's name and its parameters. Usually, they're indented a bit to the right and lined up. A guard is basically a boolean expression. If it evaluates to True, then the corresponding function body is used. If it evaluates to False, checking drops through to the next guard and so on. If we call this function with 24.3, it will first check if that's smaller than or equal to 18.5. Because it isn't, it falls through to the next guard. The check is carried out with the second guard and because 24.3 is less than 25.0, the second string is returned.
+
+
+이것은 명령형 언어에서의 큰 if else 트리를 연상시킵니다. 단 이것은 더 낫고 더 읽기가 쉽습니다. 큰 if else 트리는 보통 눈살이 찌푸려지지만, 때때로 어떤 문제는 그러한 이산적인 방법으로 정의되어 피해갈 수 없습니다. 가드는 이러한 것에 대한 아주 훌륭한 대체제입니다.
+
+This is very reminiscent of a big if else tree in imperative languages, only this is far better and more readable. While big if else trees are usually frowned upon, sometimes a problem is defined in such a discrete way that you can't get around them. Guards are a very nice alternative for this.
+
+
+많은 경우, 마지막 가드는 <code>otherwise</code>입니다. <code>otherwise</code>는 단순히 <code>otherwise = True</code>로 정의되며 모든 것을 취합니다. 이는 패턴과 매우 유사합니다만, 패턴은 입력이 어떤 패턴을 만족하는지를 확인할 뿐이지만 가드는 부울 조건을 검사합니다. 만약 어떤 함수의 모든 가드가 <code>False</code>로 평가되면 (그리고 우리가 광범위인 <code>otherwise</code> 가드를 제공하지 않았다면), 평가는 다음 <em>패턴</em>으로 내려갑니다. 이것이 패턴과 가드가 잘 어울리는 방법입니다. 만약 알맞은 가드나 패턴이 발견되지 않는다면, 오류가 발생됩니다.
+
+Many times, the last guard is otherwise. otherwise is defined simply as otherwise = True and catches everything. This is very similar to patterns, only they check if the input satisfies a pattern but guards check for boolean conditions. If all the guards of a function evaluate to False (and we haven't provided an otherwise catch-all guard), evaluation falls through to the next pattern. That's how patterns and guards play nicely together. If no suitable guards or patterns are found, an error is thrown.
+
+물론 우리는 가드를 우리가 원하는 만큼 많은 매개변수를 취하는 함수와도 사용할 수 있습니다. 사용자가 위의 <code>bmiTell</code>함수를 호출하기 전에 자신의 BMI를 계산하게 하는 대신, 이 함수를 수정해 이 함수가 신장과 몸무게를 취해 계산하도록 합시다.
+
+Of course we can use guards with functions that take as many parameters as we want. Instead of having the user calculate his own BMI before calling the function, let's modify this function so that it takes a height and weight and calculates it for us.
+
+gd::pre
+bmiTell :: (RealFloat a) => a -> a -> String
+bmiTell weight height
+    | weight / height ^ 2 <= 18.5 = "You're underweight, you emo, you!"
+    | weight / height ^ 2 <= 25.0 = "You're supposedly normal. Pffft, I bet you're ugly!"
+    | weight / height ^ 2 <= 30.0 = "You're fat! Lose some weight, fatty!"
+    | otherwise                 = "You're a whale, congratulations!"
+gd::endpre
+
+만약 제가 뚱뚱하면 무슨 말을 할 지 봅시다 ...
+
+Let's see if I'm fat ...
+
+gd::pre
+ghci> bmiTell 85 1.90
+"You're supposedly normal. Pffft, I bet you're ugly!"
+gd::endpre
+
+호우~!! 저는 뚱뚱하지 않군요! 하지만 하스켈이 방금 저보고 못생겼다는데요. 아무래도 좋습니다!
+
+Yay! I'm not fat! But Haskell just called me ugly. Whatever!
+
+첫번째 가드 전에, 함수명과 매개변수 전에 <code>=</code>가 없다는 것에 주목하십시오. 많은 초보자들이 때때로 =를 거기 넣어서 구문 오류를 일으킵니다.
+
+Note that there's no = right after the function name and its parameters, before the first guard. Many newbies get syntax errors because they sometimes put it there.
+
+또 하나의 아주 간단한 예제: 우리만의 <code>max</code>함수를 구현해봅시다. 기억하시겠지만, 이 함수는 비교될 수 있는 두 개를 취해 더 큰 것을 반환합니다.
+
+Another very simple example: let's implement our own max function. If you remember, it takes two things that can be compared and returns the larger of them.
+
+gd::pre
+max' :: (Ord a) => a -> a -> a
+max' a b 
+    | a > b     = a
+    | otherwise = b
+gd::endpre
+
+가드는 또한 한 줄로도 작성될 수 있지만, 저는 그렇게 하는 것을 추천하지는 않습니다. 왜냐하면, 아주 짧은 함수에 대한 것일지라도, 그것은 조금 읽기 힘들기 때문입니다. 하지만 시연을 위해 <code>max'</code>를 다음과 같이 작성할 수도 있습니다:
+
+Guards can also be written inline, although I'd advise against that because it's less readable, even for very short functions. But to demonstrate, we could write max' like this:
+
+gd::pre
+max' :: (Ord a) => a -> a -> a
+max' a b | a > b = a | otherwise = b
+gd::endpre
+
+아악! 전혀 가독성 있지 않아! 다음으로 진도를 나가겠습니다: 우리만의 <code>compare</code>를 가드를 사용해 구현해 봅시다.
+
+Ugh! Not very readable at all! Moving on: let's implement our own compare by using guards.
+
+gd::pre
+myCompare :: (Ord a) => a -> a -> Ordering
+a `myCompare` b
+    | a > b     = GT
+    | a == b    = EQ
+    | otherwise = LT
+
+ghci> 3 `myCompare` 2
+GT
+gd::endpre
+
+<em>노트</em>: 우리는 함수를 백틱과 함께 삽입(infix)으로써 호출할 수 있을 뿐만 아니라, 함수를 백틱을 사용해 정의할 수도 있습니다. 때로는 이 편이 읽기가 더 쉽습니다.
+
+Note: Not only can we call functions as infix with backticks, we can also define them using backticks. Sometimes it's easier to read that way.
+
+gd::h2
+어디야!?
+Where!?
+
+이전 절에서, 우리는 예의없는 BMI 계산기(?) 함수를 다음과 같이 정의했었습니다:
+
+In the previous section, we defined a BMI calculator function and berator like this:
+
+gd::pre
+bmiTell :: (RealFloat a) => a -> a -> String
+bmiTell weight height
+    | weight / height ^ 2 <= 18.5 = "You're underweight, you emo, you!"
+    | weight / height ^ 2 <= 25.0 = "You're supposedly normal. Pffft, I bet you're ugly!"
+    | weight / height ^ 2 <= 30.0 = "You're fat! Lose some weight, fatty!"
+    | otherwise                   = "You're a whale, congratulations!"
+gd::endpre
+
+우리가 똑같은 일을 3번 반복했다는 점에 주의하십시오. ！우！리！는！똑！같！은！일！을！세！번！반！복！했！습！니！다！ 프로그래밍을 하는 동안 같은 일을 (세 번) 반복하는 것은 거의 머리에 발차기를 맞는 것만큼이나 바람직하다고 할 수 있겠지요. 우리가 같은 표현식을 세 번 반복했으니까, 우리가 이것을 한 번만 계산하고, 어떤 이름에 그 결과를 속박하고 해당 이름을 그 표현식 대신 사용할 수 있다면 이상적일 것입니다. 흠, 우리는 위 함수를 아래와 같이 수정할 수 있습니다.
+
+Notice that we repeat ourselves here three times. We repeat ourselves three times. Repeating yourself (three times) while programming is about as desirable as getting kicked inna head. Since we repeat the same expression three times, it would be ideal if we could calculate it once, bind it to a name and then use that name instead of the expression. Well, we can modify our function like this:
+
+gd::pre
+bmiTell :: (RealFloat a) => a -> a -> String
+bmiTell weight height
+    | bmi <= 18.5 = "You're underweight, you emo, you!"
+    | bmi <= 25.0 = "You're supposedly normal. Pffft, I bet you're ugly!"
+    | bmi <= 30.0 = "You're fat! Lose some weight, fatty!"
+    | otherwise   = "You're a whale, congratulations!"
+    where bmi = weight / height ^ 2
+gd::endpre
+
+우리는 <code>where</code> 키워드를 가드의 이후에 놓고 (통상적으로 이 키워드를 파이프가 들여쓰기 된 만큼 들여쓰기하는 것이 최고입니다) 그리고나서 우리는 몇 가지 이름이나 함수를 정의합니다. 이 이름들은 가드 전체에 걸쳐 보이며 같은 일을 반복하지 않아도 되는 이점을 우리에게 줍니다. 만약 우리가 BMI를 조금 다르게 계산하기로 결정한다면, 우리는 식을 단 한 번만 변경하면 됩니다. 이렇게 하는 것은 또한 대상들에 이름을 붙임으로써 가독성을 향상시키고 여기서의 <code>bmi</code>변수와 같은 것들이 오직 한 번만 계산되므로 프로그램을 더 빠르게 만들 수 있습니다. 우리는 조금 열광해서 우리의 함수를 다음과 같이 나타낼 수도 있습니다.
+
+We put the keyword where after the guards (usually it's best to indent it as much as the pipes are indented) and then we define several names or functions. These names are visible across the guards and give us the advantage of not having to repeat ourselves. If we decide that we want to calculate BMI a bit differently, we only have to change it once. It also improves readability by giving names to things and can make our programs faster since stuff like our bmi variable here is calculated only once. We could go a bit overboard and present our function like this:
+
+gd::pre
+bmiTell :: (RealFloat a) => a -> a -> String
+bmiTell weight height
+    | bmi <= skinny = "You're underweight, you emo, you!"
+    | bmi <= normal = "You're supposedly normal. Pffft, I bet you're ugly!"
+    | bmi <= fat    = "You're fat! Lose some weight, fatty!"
+    | otherwise     = "You're a whale, congratulations!"
+    where bmi = weight / height ^ 2
+          skinny = 18.5
+          normal = 25.0
+          fat = 30.0
+gd::endpre
+
+함수의 <code>where</code> 부분에서 우리가 정의한 이름들은 오직 그 함수에게만 보이므로, 우리는 그 이름들이 다른 함수의 네임스페이스를 오염시키는 것에 대해 걱정하지 않아도 됩니다. 모든 이름들이 하나의 열에 정렬되어 있는 것에 주목하십시오. 만약 우리가 이름들을 깔끔하고 적절하게 정렬하지 않는다면, 그러면 하스켈은 이 이름들이 모두 같은 블럭의 부분이라는 것을 모르기 때문에 혼란스러워집니다.
+
+The names we define in the where section of a function are only visible to that function, so we don't have to worry about them polluting the namespace of other functions. Notice that all the names are aligned at a single column. If we don't align them nice and proper, Haskell gets confused because then it doesn't know they're all part of the same block.
+
+<em>where</em> 바인딩은 다른 패턴들의 함수 본체에 걸쳐 공유되지 않습니다. 만약 여러분이 한 함수의 여러 패턴들이 어떤 공유된 이름에 접근하기를 원하신다면, 여러분은 그 이름을 전역적으로 정의해야 합니다.
+
+where bindings aren't shared across function bodies of different patterns. If you want several patterns of one function to access some shared name, you have to define it globally.
+
+여러분은 또한 where 바인딩을 사용해 <em>패턴매칭</em>을 할 수 있습니다! 우리는 이전의 저 함수의 where 부분을 다음으로 재작성할 수도 있었습니다:
+
+You can also use where bindings to pattern match! We could have rewritten the where section of our previous function as:
+
+gd::pre
+    ...
+    where bmi = weight / height ^ 2
+          (skinny, normal, fat) = (18.5, 25.0, 30.0)
+gd::endpre
+
+이름과 성을 받아서 이니셜을 내놓는 또 하나의 정말 단순한 함수를 만들어 봅시다.
+
+Let's make another fairly trivial function where we get a first and a last name and give someone back their initials.
+
+gd::pre
+initials :: String -> String -> String
+initials firstname lastname = [f] ++ ". " ++ [l] ++ "."
+    where (f:_) = firstname
+          (l:_) = lastname
+gd::endpre
+
+우리는 이 패턴매칭을 함수의 매개변수에서 바로 했었을 수도 있지만 (그 편이 사실 더 짧고 분명했을 것입니다) 다만 패턴매칭을 where 바인딩에서 하는 것 역시 가능하다는 것을 보여주기 위해서 위와 같이 하였습니다.
+
+We could have done this pattern matching directly in the function's parameters (it would have been shorter and clearer actually) but this just goes to show that it's possible to do it in where bindings as well.
+
+우리가 상수들을 where 블럭에서 정의해놓은 것처럼, 여러분은 함수 또한 정의할 수 있습니다. 우리의 건강한 프로그래밍 테마를 유지하기 위해, 몸무게-신장의 리스트를 취해 BMI의 리스트를 반환하는 함수를 맨들어 봅시다.
+
+Just like we've defined constants in where blocks, you can also define functions. Staying true to our healthy programming theme, let's make a function that takes a list of weight-height pairs and returns a list of BMIs.
+
+gd::pre
+calcBmis :: (RealFloat a) => [(a, a)] -> [a]
+calcBmis xs = [bmi w h | (w, h) <- xs]
+    where bmi weight height = weight / height ^ 2
+gd::endpre
+
+그리고 이것이 있는 전부입니다! 우리가 이 예제에서 <code>bmi</code>를 함수로서 도입해야 했던 이유는 우리가 함수의 매개변수들로부터 하나의 BMI만을 계산할 수 없기 때문입니다. 우리는 함수에 전달된 리스트를 검사해야 하고 리스트에 있는 모든 쌍에 대해 각각 다른 BMI가 있습니다.
+
+And that's all there is to it! The reason we had to introduce bmi as a function in this example is because we can't just calculate one BMI from the function's parameters. We have to examine the list passed to the function and there's a different BMI for every pair in there.
+
+<em>where</em> 바인딩은 또한 중첩될 수 있습니다. 함수를 만들고 몇 개의 보조 함수를 해당 함수의 <em>where</em>절 내에 정의하고 그 보조함수들에 또 보조함수를 각각 자신의 <em>where</em>절과 함께 만드는 것은 흔한 사용례(idiom)입니다.
+
+where bindings can also be nested. It's a common idiom to make a function and define some helper function in its where clause and then to give those functions helper functions as well, each with its own where clause.
+
+gd::h2
+존재하게 하라
+Let it be
+
+where 바인딩과 매우 유사한 것은 let 바인딩입니다. where 바인딩은 함수의 끝에서 변수들에 속박할 수 있게 하는 문법적 구성체이며 전체 함수가 그 변수들을 볼 수 있고, 모든 가드들 또한 포함입니다. let 바인딩은 어디서든지 변수에 속박할 수 있게 하며 그 자체로 표현식이지만, 매우 지역적이어서, 가드 전체에 걸치지는 않습니다. 이름들에 값들을 속박하기 위해 사용되는 하스켈에 있는 여느 구성체처럼, let 바인딩은 패턴 매칭에도 사용될 수 있습니다. 이제 let 바인딩이 작동하는 모습을 관찰해 봅시다! 아래는 원통의 높이와 반지름에 기반해 원통의 겉넓이를 계산해주는 함수를 정의할 수 있는 방법입니다.
+
+Very similar to where bindings are let bindings. Where bindings are a syntactic construct that let you bind to variables at the end of a function and the whole function can see them, including all the guards. Let bindings let you bind to variables anywhere and are expressions themselves, but are very local, so they don't span across guards. Just like any construct in Haskell that is used to bind values to names, let bindings can be used for pattern matching. Let's see them in action! This is how we could define a function that gives us a cylinder's surface area based on its height and radius:
+
+gd::pre
+cylinder :: (RealFloat a) => a -> a -> a
+cylinder r h =
+    let sideArea = 2 * pi * r * h
+        topArea = pi * r ^2
+    in  sideArea + 2 * topArea
+gd::endpre
+
+그 형태는 「표현식」내에 있는 let 「바인딩」입니다. <em>let</em> 부분에서 여러분이 정의한 이름들은 <em>in</em> 부분 이후의 표현식에 접근 가능합니다. 여러분께서 보실 수 있듯, 우리는 let 바인딩을 <em>where</em> 바인딩으로도 정의할 수 있었습니다. 이름들이 또한 하나의 열에 정렬되어 있음에 주목하십시오. 그래서 이 둘 사이의 차이점이 무엇인가? 지금으로선 단지 <em>let</em>이 속박을 먼저 하고 표현식이 그 속박된 이름을 나중에 사용하는 반면 <em>where</em>은 반대로 하는 것으로 관찰됩니다.
+
+The form is let <bindings> in <expression>. The names that you define in the let part are accessible to the expression after the in part. As you can see, we could have also defined this with a where binding. Notice that the names are also aligned in a single column. So what's the difference between the two? For now it just seems that let puts the bindings first and the expression that uses them later whereas where is the other way around.
+
+차이점은 바로 <em>let</em> 바인딩은 그 자체로 표현식이라는 점입니다. <em>where</em> 바인딩은 단지 문법적 구성체입니다. 우리가 if문을 사용해보고 if else문은 표현식이며 여러분은 if문을 거의 어느 곳에서든 한 줄에 구겨 넣을 수 있다고 설명됐던 때를 기억하십니까?
+
+The difference is that let bindings are expressions themselves. where bindings are just syntactic constructs. Remember when we did the if statement and it was explained that an if else statement is an expression and you can cram it in almost anywhere?
+
+gd::pre
+ghci> [if 5 > 3 then "Woo" else "Boo", if 'a' > 'b' then "Foo" else "Bar"]
+["Woo", "Bar"]
+ghci> 4 * (if 10 > 5 then 10 else 0) + 2
+42
+gd::endpre
+
+여러분은 이런 것을 let 바인딩으로도 할 수 있습니다.
+
+You can also do that with let bindings.
+
+gd::pre
+ghci> 4 * (let a = 9 in a + 1) + 2
+42
+gd::endpre
+
+let 바인딩은 지역 스코프에서 함수들을 도입하기 위해서도 사용될 수 있습니다:
+
+They can also be used to introduce functions in a local scope:
+
+gd::pre
+ghci> [let square x = x * x in (square 5, square 3, square 2)]
+[(25,9,4)]
+gd::endpre
+
+만약 우리가 몇 개의 변수들에 한 줄에서 속박하기를 원한다면, 우리는 명백히 그 변수들을 열에 정렬할 수 없습니다. 그것이 우리가 그 변수들을 세미콜론으로 분리할 수 있는 이유입니다.
+
+If we want to bind to several variables inline, we obviously can't align them at columns. That's why we can separate them with semicolons.
+
+gd::pre
+ghci> (let a = 100; b = 200; c = 300 in a*b*c, let foo="Hey "; bar = "there!" in foo ++ bar)
+(6000000,"Hey there!")
+gd::endpre
+
+여러분은 마지막 바인딩 뒤에 세미콜론을 꼭 붙일 필요는 없지만 하고 싶으시다면 할 수는 있습니다. 우리가 전에 말한 것처럼, 여러분은 <em>let</em> 바인딩으로 패턴매칭할 수 있습니다. let 바인딩은 튜플을 성분들로 빠르게 분해하고 이름 등등에 해당 성분들을 속박하는데 매우 유용합니다.
+
+You don't have to put a semicolon after the last binding but you can if you want. Like we said before, you can pattern match with let bindings. They're very useful for quickly dismantling a tuple into components and binding them to names and such.
+
+gd::pre
+ghci> (let (a,b,c) = (1,2,3) in a+b+c) * 100
+600
+gd::endpre
+
+여러분은 또한 <em>let</em> 바인딩을 list comprehension 내부에 놓을 수 있습니다. <em>where</em>으로 보조함수를 정의하는 대신 <em>let</em>을 list comprehension 내부에서 사용하기 위해 몸무게-신장 쌍의 리스트를 계산하는 이전 예제를 재작성해 봅시다.
+
+You can also put let bindings inside list comprehensions. Let's rewrite our previous example of calculating lists of weight-height pairs to use a let inside a list comprehension instead of defining an auxiliary function with a where.
+
+gd::pre
+calcBmis :: (RealFloat a) => [(a, a)] -> [a]
+calcBmis xs = [bmi | (w, h) <- xs, let bmi = w / h ^ 2]
+gd::endpre
+
+우리는 우리가 술어를 포함시키는 것과 매우 유사하게 <em>let</em>을 list comprehension 내부에 포함시키지만, 다만 let 바인딩은 리스트를 필터링하지 않고, 오직 이름들에 속박할 뿐입니다. list comprehension 내부에서 <em>let</em>에서 정의된 이름들은 출력함수 (| 이전의 부분) 와 이 let 바인딩의 이후에 오는 모든 술어와 부분들에 보입니다. 그래서 우리는 이 함수가 오직 뚱뚱한 사람의 BMI만을 반환하게 만들 수도 있습니다.
+
+We include a let inside a list comprehension much like we would a predicate, only it doesn't filter the list, it only binds to names. The names defined in a let inside a list comprehension are visible to the output function (the part before the |) and all predicates and sections that come after of the binding. So we could make our function return only the BMIs of fat people:
+
+gd::pre
+calcBmis :: (RealFloat a) => [(a, a)] -> [a]
+calcBmis xs = [bmi | (w, h) <- xs, let bmi = w / h ^ 2, bmi >= 25.0]
+gd::endpre
+
+우리는 bmi 이름을 <code>(w, h) <- xs</code> 부분에서 사용할 수 없는데 왜냐하면 저 부분은 이 let 바인딩 이전에 정의되었기 때문입니다.
+
+We can't use the bmi name in the (w, h) <- xs part because it's defined prior to the let binding.
+
+우리는 <em>let</em> 바인딩의 <em>in</em> 부분을 우리가 let 바인딩을 list comprehension에서 사용했을 때 생략했는데 그 이유는 이름들의 가시성이 이미 list comprehension에서 미리 정의되었기 때문입니다. 그러나, 우리는 <em>let in</em> 바인딩을 술어에서 사용할 수도 있고 그 정의된 이름들은 오직 그 술어에만 보일 것입니다. <em>in</em> 부분은 또한 함수와 상수를 GHCi에서 직접적으로 정의할 때 생략될 수 있습니다. 만약 우리가 그렇게 한다면, 그 이름들은 전체 상호작용 세션 내내 보일 것입니다.
+
+We omitted the in part of the let binding when we used them in list comprehensions because the visibility of the names is already predefined there. However, we could use a let in binding in a predicate and the names defined would only be visible to that predicate. The in part can also be omitted when defining functions and constants directly in GHCi. If we do that, then the names will be visible throughout the entire interactive session.
+
+gd::pre
+ghci> let zoot x y z = x * y + z
+ghci> zoot 3 9 2
+29
+ghci> let boot x y z = x * y + z in boot 3 4 2
+14
+ghci> boot
+<interactive>:1:0: Not in scope: `boot'
+gd::endpre
+
+만약 <em>let</em> 바인딩이 그렇게 멋있다면, 왜 let 바인딩을 <em>where</em> 바인딩 대신 항상 사용하지 않습니까? 여러분께선 궁금하실지도 모릅니다. 물론, <em>let</em> 바인딩은 표현식이고 스코프의 측면에서 아주 지역적이므로, 가드들에 걸쳐 사용될 수 없습니다. 몇몇 사람들은 <em>where</em> 바인딩을 선호하는데 그 이유는 이름들이 자신들이 사용되고 있는 함수 이후에 오기 때문입니다. 그러한 방법으로, 함수 본체는 함수명과 타입 선언에 더 가깝고 더욱 가독성있는 것들에 가깝습니다.
+
+If let bindings are so cool, why not use them all the time instead of where bindings, you ask? Well, since let bindings are expressions and are fairly local in their scope, they can't be used across guards. Some people prefer where bindings because the names come after the function they're being used in. That way, the function body is closer to its name and type declaration and to some that's more readable.
+
+gd::h2
+case 표현식
+Case expressions
+
+많은 명령형 언어 (C, C++, Java 등) 는 case 구문을 가지고 있고 만약 여러분이 한 번이라도 이러한 언어로 프로그래밍을 해본 적이 있으시다면, 여러분은 아마도 이 구문이 무엇에 대한 것인지 아실 것입니다. case 구문이란 변수를 취하고 그 변수의 특정한 값에 대한 코드의 블럭을 실행하고 어쩌면 해당 변수가 우리가 case를 설정해놓지 않은 값을 가지고 있는 경우를 대비해 범용적인 코드의 블럭을 포함하는 것에 대한 것입니다.
+
+Many imperative languages (C, C++, Java, etc.) have case syntax and if you've ever programmed in them, you probably know what it's about. It's about taking a variable and then executing blocks of code for specific values of that variable and then maybe including a catch-all block of code in case the variable has some value for which we didn't set up a case.
+
+하스켈은 그러한 개념을 취하고 그러한 개념에 한 발 더 나아갑니다. 이 이름이 암시하듯이, case 표현식이란, 물론, 표현식이며, if else 표현식과 <em>let</em> 바인딩과 아주 비슷합니다. 우리가 한 변수의 값의 가능한 경우들에 기반해 표현식을 평가할 수 있을 뿐만 아니라, 우리는 또한 패턴매칭을 할 수 있습니다. 음... 변수를 취하고, 그 변수를 패턴매칭하고, 변수의 값에 기반해 코드의 조각을 평가하고... 어디서 우리가 이걸 전에 들어봤을까요? 아! 함수 정의에서의 매개변수들에 대한 패턴 매칭! 물론, 이것은 실제로는 단순히 case 표현식에 대한 문법적 설탕입니다. 아래의 두 코드의 조각은 같은 일을 하며 상호교환적입니다:
+
+Haskell takes that concept and one-ups it. Like the name implies, case expressions are, well, expressions, much like if else expressions and let bindings. Not only can we evaluate expressions based on the possible cases of the value of a variable, we can also do pattern matching. Hmmm, taking a variable, pattern matching it, evaluating pieces of code based on its value, where have we heard this before? Oh yeah, pattern matching on parameters in function definitions! Well, that's actually just syntactic sugar for case expressions. These two pieces of code do the same thing and are interchangeable:
+
+gd::pre
+head' :: [a] -> a
+head' [] = error "No head for empty lists!"
+head' (x:_) = x
+
+head' :: [a] -> a
+head' xs = case xs of [] -> error "No head for empty lists!"
+                      (x:_) -> x
+gd::endpre
+
+여러분께서 보실 수 있으시다시피, case 표현식의 구문은 매우 단순합니다:
+
+As you can see, the syntax for case expressions is pretty simple:
+
+gd::pre
+case expression of pattern -> result
+                   pattern -> result
+                   pattern -> result
+                   ...
+gd::endpre
+
+표현식은 패턴에 대해 매칭됩니다. 이 패턴 매칭 동작은 기대한 것과 같습니다: 표현식에 매칭되는 첫번째 패턴이 사용됩니다. 만약 전체 case 표현식을 다 지나갔고 적절한 패턴이 발견되지 않았다면, 런타임 오류가 발생됩니다.
+
+expression is matched against the patterns. The pattern matching action is the same as expected: the first pattern that matches the expression is used. If it falls through the whole case expression and no suitable pattern is found, a runtime error occurs.
+
+함수 매개변수에서의 패턴 매칭은 오직 함수를 정의할 때만 이루어질 수 있는 반면, case 표현식은 꽤 어느 곳에서든 사용될 수 있습니다. 예를 들어:
+
+Whereas pattern matching on function parameters can only be done when defining functions, case expressions can be used pretty much anywhere. For instance:
+
+gd::pre
+describeList :: [a] -> String
+describeList xs = "The list is " ++ case xs of [] -> "empty."
+                                               [x] -> "a singleton list." 
+                                               xs -> "a longer list."
+gd::endpre
+
+case 표현식은 어떤 표현식의 중간에 있는 무언가에 대해 패턴매칭하는 데 유용합니다. 함수 정의에서의 패턴 매칭은 case 표현식에 대한 문법적 설탕이기 때문에, 우리는 위 함수를 아래와 같이 정의할 수도 있었습니다.
+
+They are useful for pattern matching against something in the middle of an expression. Because pattern matching in function definitions is syntactic sugar for case expressions, we could have also defined this like so:
+
+gd::pre
+describeList :: [a] -> String
+describeList xs = "The list is " ++ what xs
+    where what [] = "empty."
+          what [x] = "a singleton list."
+          what xs = "a longer list."
+gd::endpre

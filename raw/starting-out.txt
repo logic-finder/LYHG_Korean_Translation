@@ -1,0 +1,891 @@
+gd::h1
+시작하기
+Starting Out
+
+gd::h2
+제자리에, 준비, 출발!
+Ready, set, go!
+
+좋습니다. 이제 시작해 봅시다! 만약 여러분이 혹시라도 소갯말 따위는 읽지 않으시는 돌격 일변도(?)의 스타일이시고 또 실제로 그렇게 하셨다면, 여러분께서는 어쨌든 지난 장의 마지막 부분을 다시 읽어보셔야 할 필요성을 느끼게 되실지도 모릅니다. 왜냐하면 그곳에서 이 책을 따라가는데 필요한 것들과 함수를 불러오는 방법에 대해 설명하고 있기 때문입니다. 우선 우리가 할 것은 ghc의 상호작용 모드를 실행한 뒤 몇 개의 함수들을 호출해보면서 하스켈의 아주 기본적인 느낌을 체험해보는 것입니다. 터미널을 실행하시고 ghci를 입력하십시오. 그러면 다음과 같은 문구를 보게 될 것입니다.
+
+Alright, let's get started! If you're the sort of horrible person who doesn't read introductions to things and you skipped it, you might want to read the last section in the introduction anyway because it explains what you need to follow this tutorial and how we're going to load functions. The first thing we're going to do is run ghc's interactive mode and call some function to get a very basic feel for haskell. Open your terminal and type in ghci. You will be greeted with something like this.
+
+gd::pre
+GHCi, version 6.8.2: http://www.haskell.org/ghc/  :? for help
+Loading package base ... linking ... done.
+Prelude>
+
+※ (역주) 저는 이렇게 나옵니다.
+develop@Cor:~/hsklearn$ ghci
+GHCi, version 9.4.8: https://www.haskell.org/ghc/  :? for help
+ghci>
+gd::endpre
+
+축하드립니다―여러분께서는 지금 GHCI 내에 계십니다! 여기서의 프롬프트는 <code>Prelude></code>지만 여러분이 세션 내로 무언가를 로딩했을 때 더 길어질 수 있으므로, 우리는 <code>ghci></code>를 사용하겠습니다. 만약 여러분께서 동일한 프롬프트를 가지고 싶으시다면, <code>:set prompt "ghci> "</code>라고 입력하십시오.
+
+Congratulations, you're in GHCI! The prompt here is Prelude> but because it can get longer when you load stuff into the session, we're going to use ghci>. If you want to have the same prompt, just type in :set prompt "ghci> ".
+
+우선 간단한 산술입니다.
+
+Here's some simple arithmetic.
+
+gd::pre
+ghci> 2 + 15
+17
+ghci> 49 * 100
+4900
+ghci> 1892 - 1472
+420
+ghci> 5 / 2
+2.5
+ghci>
+gd::endpre
+
+이것은 다소 분명하므로, 별도의 설명은 필요없겠지요. 우리는 또한 몇 개의 연산자를 한 줄에서 사용할 수 있으며 모든 통상적인 연산자 우선순위가 적용됩니다. 우리는 괄호를 사용해 우선순위를 명시적으로 하거나 혹은 우선순위를 변경할 수 있습니다.
+
+This is pretty self-explanatory. We can also use several operators on one line and all the usual precedence rules are obeyed. We can use parentheses to make the precedence explicit or to change it.
+
+gd::pre
+ghci> (50 * 100) - 4999
+1
+ghci> 50 * 100 - 4999
+1
+ghci> 50 * (100 - 4999)
+-244950
+gd::endpre
+
+꽤나 멋지지 않습니까? 예, 사실 별로 멋있지는 않다는 것을 알고 있습니다만 제 말을 부디 끝까지 들어주시기를 요청드리는 바입니다. 여기서 조심해야 할 작은 위험은 숫자를 음수화시키는 것입니다. 만약 우리가 음수를 가지고 싶다면, 숫자를 항상 괄호로 둘러싸는 것이 안전합니다. <code>5 * -3</code>을 하면 GHCI는 당신에게 소리를 지를 것이지만 <code>5 * (-3)</code>을 하는 것은 올바르게 동작할 것입니다.
+
+Pretty cool, huh? Yeah, I know it's not but bear with me. A little pitfall to watch out for here is negating numbers. If we want to have a negative number, it's always best to surround it with parentheses. Doing 5 * -3 will make GHCI yell at you but doing 5 * (-3) will work just fine.
+
+부울 대수 역시 복잡하지 않습니다. 아마 알고 계시겠지만, <code>&&</code>는 부울 <em>and</em>를, <code>||</code>은 부울 <em>or</em>를 의미합니다. <code>not</code>은 <code>True</code>나 <code>False</code>를 부정[negate]합니다.
+
+Boolean algebra is also pretty straightforward. As you probably know, && means a boolean and, || means a boolean or. not negates a True or a False.
+
+gd::pre
+ghci> True && False
+False
+ghci> True && True
+True
+ghci> False || True
+True 
+ghci> not False
+True
+ghci> not (True && True)
+False
+gd::endpre
+
+동등성 검사는 다음과 같이 이루어집니다.
+
+Testing for equality is done like so.
+
+gd::pre
+ghci> 5 == 5
+True
+ghci> 1 == 0
+False
+ghci> 5 /= 5
+False
+ghci> 5 /= 4
+True
+ghci> "hello" == "hello"
+True
+gd::endpre
+
+<code>5 + "llama"</code>나 <code>5 == True</code>는 어떨까요? 만약 우리가 첫번째 코드를 실행시킨다면, 오류 메시지를 얻게 됩니다!
+
+What about doing 5 + "llama" or 5 == True? Well, if we try the first snippet, we get a big scary error message!
+
+gd::pre
+No instance for (Num [Char])
+arising from a use of `+' at <interactive>:1:0-9
+Possible fix: add an instance declaration for (Num [Char])
+In the expression: 5 + "llama"
+In the definition of `it': it = 5 + "llama"
+
+※ (역주) 저의 경우엔 아래와 같이 나옵니다.
+<interactive>:24:1: error:
+    • No instance for (Num String) arising from the literal ‘5’
+    • In the first argument of ‘(+)’, namely ‘5’
+      In the expression: 5 + "llama"
+      In an equation for ‘it’: it = 5 + "llama"
+gd::endpre
+
+여기서 GHCI가 말하고 있는 것은, "llama"는 숫자가 아니어서 어떻게 5에 더할지 모르겠다는 것입니다. 설령 "llama"가 아니라 "four"나 "4"였을지라도, 하스켈은 여전히 이것들을 숫자로 생각하지 않을 것입니다. <code>+</code>는 좌측과 우측이 숫자이기를 기대합니다. 한편 <code>True == 5</code>를 실행시킨다면, GHCI는 타입이 일치하지 않는다고 이야기할 것입니다. <code>+</code>가 오직 숫자로 간주되는 것들에만 적용되는 반면, <code>==</code>는 비교될 수 있는 임의의 두 대상에 적용됩니다. 하지만 여기서 함정은 +와 == 모두 피연산자가 같은 타입이어야만 한다는 것입니다. 여러분은 사과와 오렌지를 비교할 수 없습니다. 타입에 대해서는, 얼마 후에 더 깊게 살펴보도록 하겠습니다. 노트: 5 + 4.0은 가능합니다. 왜냐하면 5는 교활해서, 정수로도, 혹은 부동소수점 수로도 행동할 수 있기 때문입니다. 4.0은 정수처럼 행동할 수 없으므로, 5가 맞춰줘야만[adapt] 합니다.
+
+Yikes! What GHCI is telling us here is that "llama" is not a number and so it doesn't know how to add it to 5. Even if it wasn't "llama" but "four" or "4", Haskell still wouldn't consider it to be a number. + expects its left and right side to be numbers. If we tried to do True == 5, GHCI would tell us that the types don't match. Whereas + works only on things that are considered numbers, == works on any two things that can be compared. But the catch is that they both have to be the same type of thing. You can't compare apples and oranges. We'll take a closer look at types a bit later. Note: you can do 5 + 4.0 because 5 is sneaky and can act like an integer or a floating-point number. 4.0 can't act like an integer, so 5 is the one that has to adapt.
+
+여러분께서는 아마도 인지하지 못하셨겠지만, 우리는 지금까지 함수들을 사용하고 있었습니다. 예를 들어, <code>*</code>는 두 개의 숫자를 취한 후 곱하는 함수입니다. 보신 바와 같이, 우리는 이 함수를 두 숫자 사이에 끼워서[sandwich] 호출할 수 있습니다. 이를 두고 <em>삽입[infix]</em> 함수라고 합니다. 숫자와 함께 사용되지 않는 대부분의 함수들은 <em>접두[prefix]</em> 함수입니다. 이 주제를 좀 더 살펴봅시다.
+
+You may not have known it but we've been using functions now all along. For instance, * is a function that takes two numbers and multiplies them. As you've seen, we call it by sandwiching it between them. This is what we call an infix function. Most functions that aren't used with numbers are prefix functions. Let's take a look at them.
+
+함수들은 대개 prefix이므로, 지금부터 우리는 함수가 prefix의 형태라는 것을 명시적으로 서술하지 않고, 다만 그럴 것이라고 추측하기로 합시다. 대부분의 명령형 언어에서, 함수는 다음과 같이 호출됩니다. 즉, 함수의 이름을 적고, 괄호 내에 함수의 매개변수들을 작성합니다 (매개변수들은 보통 콤마로 구분됩니다). 하스켈에서, 함수는 다음과 같이 호출됩니다. 즉, 함수의 이름을 적고, 띄어쓰기를 한 칸 적고, 그리고 매개변수들을 적습니다 (매개변수들은 띄어쓰기로 구분됩니다). 함수를 처음 사용해 보는 것이기도 하니, 우선 하스켈에서 제일 따분한 함수 중 하나를 호출해보기로 합시다.
+
+Functions are usually prefix so from now on we won't explicitly state that a function is of the prefix form, we'll just assume it. In most imperative languages functions are called by writing the function name and then writing its parameters in parentheses, usually separated by commas. In Haskell, functions are called by writing the function name, a space and then the parameters, separated by spaces. For a start, we'll try calling one of the most boring functions in Haskell.
+
+gd::pre
+ghci> succ 8
+9
+gd::endpre
+
+<code>succ</code> 함수는 정의된 후계자[successor]를 가지고 있는 임의의 대상을 취해 그 successor를 반환합니다. 보시다시피, 우리는 단지 함수명과 매개변수를 띄어쓰기로 분리했습니다. 다수의 매개변수를 지닌 함수를 호출하는 것 역시 간단합니다. 함수 <code>min</code>과 <code>max</code>는 (마치 숫자처럼) 순서대로 놓일 수 있는 두 개의 대상을 취합니다. min은 더 작은 쪽을 반환하고, max는 더 큰 쪽을 반환합니다. 한번 입력해 보십시오.
+
+The succ function takes anything that has a defined successor and returns that successor. As you can see, we just separate the function name from the parameter with a space. Calling a function with several parameters is also simple. The functions min and max take two things that can be put in an order (like numbers!). min returns the one that's lesser and max returns the one that's greater. See for yourself:
+
+gd::pre
+ghci> min 9 10
+9
+ghci> min 3.4 3.2
+3.2
+ghci> max 100 101
+101 
+gd::endpre
+
+함수 적용[function application], 즉 함수명 뒤에 띄어쓰기를 배치하고 그 뒤로 매개변수 를 나열함으로써 함수를 호출하는 것은, 가장 높은 우선순위[precedence]를 가지고 있습니다. 요컨대, 아래의 두 문[statement]은 동일합니다.
+
+Function application (calling a function by putting a space after it and then typing out the parameters) has the highest precedence of them all. What that means for us is that these two statements are equivalent.
+
+gd::pre
+ghci> succ 9 + max 5 4 + 1
+16
+ghci> (succ 9) + (max 5 4) + 1
+16
+gd::endpre
+
+그러나, 만약 우리가 숫자 9와 10을 곱한 것의 successor를 얻고 싶다고 한다면, 우리는 <code>succ 9 * 10</code>라고는 작성할 수 없습니다. 왜냐하면 저렇게 할 경우 9의 successor에 10이 곱해지기 때문입니다. 그러므로 결과는 100입니다. 91을 얻으려면 <code>succ (9 * 10)</code>과 같이 작성해야 합니다.
+
+However, if we wanted to get the successor of the product of numbers 9 and 10, we couldn't write succ 9 * 10 because that would get the successor of 9, which would then be multiplied by 10. So 100. We'd have to write succ (9 * 10) to get 91.
+
+만약 함수가 두 개의 매개변수를 취한다면, 우리는 그 함수를 백틱으로 둘러쌈으로써 infix 함수로써도 호출할 수 있습니다. 예를 들어, <code>div</code> 함수는 두 개의 정수를 취해 정수 나눗셈[integral division]을 수행합니다. 즉, <code>div 92 10</code>를 실행하면 9가 나옵니다. 하지만, 우리가 함수를 그렇게 호출할 때, 어떤 숫자가 나누는 수이고 어떤 숫자가 나누어지는 수인지에 대해 혼동의 여지가 있을지도 모릅니다. 따라서 우리는 이 함수를 <code>92 `div` 10</code>처럼 infix 함수로써 호출할 수 있으며, 이 편이 더욱 분명합니다.
+
+If a function takes two parameters, we can also call it as an infix function by surrounding it with backticks. For instance, the div function takes two integers and does integral division between them. Doing div 92 10 results in a 9. But when we call it like that, there may be some confusion as to which number is doing the division and which one is being divided. So we can call it as an infix function by doing 92 `div` 10 and suddenly it's much clearer.
+
+명령형 언어를 사용하다 온 많은 사람들은, 괄호는 함수 적용을 의미해야 한다는 개념을 고수하는 경향이 있습니다. 예를 들어, C언어에서, 여러분은 괄호를 사용해 다음과 같이 함수를 호출합니다. <code>foo()</code>, <code>bar(1)</code>, <code>baz(3, "haha")</code>. 앞서 이야기했듯이, 하스켈에서는 띄어쓰기가 함수 적용에 사용됩니다. 따라서 위의 함수호출은 하스켈에서는 이와 같이 되겠지요. <code>foo</code>, <code>bar 1</code>, <code>baz 3 "haha"</code>. 따라서, <code>bar (bar 3)</code>와 같은 코드가 의미하는 바는 bar가 bar와 3을 매개변수로 하여 호출된 것을 의미하는 것이 아닙니다. 이 코드가 의미하는 바는 우리가 우선 bar를 3을 매개변수로 해서 호출해 어떤 숫자를 얻고, 그 뒤에 bar를 다시 그 얻은 숫자로 호출하는 것을 의미합니다. 만약 C언어라면, 방금 한 말은 <code>bar(bar(3))</code>와 같이 표현될 것입니다.
+
+Lots of people who come from imperative languages tend to stick to the notion that parentheses should denote function application. For example, in C, you use parentheses to call functions like foo(), bar(1) or baz(3, "haha"). Like we said, spaces are used for function application in Haskell. So those functions in Haskell would be foo, bar 1 and baz 3 "haha". So if you see something like bar (bar 3), it doesn't mean that bar is called with bar and 3 as parameters. It means that we first call the function bar with 3 as the parameter to get some number and then we call bar again with that number. In C, that would be something like bar(bar(3)).
+
+gd::h2
+아기의 첫 함수
+Baby's first functions
+
+지난 절에서, 우리는 함수 호출에 대한 기본적인 감각을 익혔습니다. 이제, 실제로 함수를 구현해 봅시다! 좋아하시는 텍스트 편집기를 여시고, 다음의 함수를 입력합시다. 이 함수는 숫자 하나를 취해 2를 곱하는 함수입니다.
+
+In the previous section we got a basic feel for calling functions. Now let's try making our own! Open up your favorite text editor and punch in this function that takes a number and multiplies it by two.
+
+gd::pre
+doubleMe x = x + x
+gd::endpre
+
+함수는 자신이 호출되는 방식과 비슷한 방식으로 정의됩니다. 함수명 뒤에는 띄어쓰기로 구분되는 매개변수가 옵니다. 하지만 함수를 정의할 때는, <code>=</code>가 있으며 이 기호 뒤에 우리는 이 함수가 무엇을 하는지 정의합니다. 방금 작성하신 파일을 baby.hs 따위의 이름으로 저장하십시오. 이제, 이 파일이 저장된 곳으로 가신 후, 그곳에서 ghci를 실행하십시오. GHCI가 열리면, <code>:l baby</code>를 입력하십시오. 이제 우리가 작성한 파일이 로딩되었으므로, 우리는 우리가 정의한 함수를 가지고 놀 수 있습니다.
+
+Functions are defined in a similar way that they are called. The function name is followed by parameters seperated by spaces. But when defining functions, there's a = and after that we define what the function does. Save this as baby.hs or something. Now navigate to where it's saved and run ghci from there. Once inside GHCI, do :l baby. Now that our script is loaded, we can play with the function that we defined.
+
+gd::pre
+ghci> :l baby
+[1 of 1] Compiling Main             ( baby.hs, interpreted )
+Ok, modules loaded: Main.
+ghci> doubleMe 9
+18
+ghci> doubleMe 8.3
+16.6
+gd::endpre
+
+<code>+</code>는 정수뿐만이 아니라 부동소수점 수에도 적용되기 때문에 (실제로는 숫자로 간주될 수 있는 임의의 대상에 대해), 위 함수는 임의의 수에 대해서도 작동합니다. 다음으로는 두 개의 숫자를 취해 각각을 2로 곱한 것을 더하는 함수를 만들어 보겠습니다.
+
+Because + works on integers as well as on floating-point numbers (anything that can be considered a number, really), our function also works on any number. Let's make a function that takes two numbers and multiplies each by two and then adds them together.
+
+gd::pre
+doubleUs x y = x*2 + y*2 
+gd::endpre
+
+간단합니다. 우리는 또한 이 함수를 <code>doubleUs x y  = x + x + y + y</code>로도 정의할 수 있었을 것입니다. 이 함수를 시험해보면 꽤 예측가능한 결과를 생산합니다 (이 함수를 baby.hs 파일의 끝에 추가하고, 저장한 뒤 GHCI 내에서 <code>:l baby</code>를 입력하는 것을 기억하십시오).
+
+Simple. We could have also defined it as doubleUs x y = x + x + y + y. Testing it out produces pretty predictable results (remember to append this function to the baby.hs file, save it and then do :l baby inside GHCI).
+
+gd::pre
+ghci> doubleUs 4 9
+26
+ghci> doubleUs 2.3 34.2
+73.0
+ghci> doubleUs 28 88 + doubleMe 123
+478
+gd::endpre
+
+예상하신대로, 우리가 만든 함수를 우리가 만든 다른 함수 안에서도 사용할 수 있습니다. 이 사실을 상기한다면, 우리는 <code>doubleUs</code>를 다음과 같이 재정의할수도 있습니다.
+
+As expected, you can call your own functions from other functions that you made. With that in mind, we could redefine doubleUs like this:
+
+gd::pre
+doubleUs x y = doubleMe x + doubleMe y
+gd::endpre
+
+이것은 여러분이 하스켈 전반에 걸쳐 보게 되실 하나의 흔한 패턴의 아주 간단한 예시입니다. 분명히 올바른 기본적인 함수들을 만들고, 그것들을 결합해 더욱 복잡한 함수를 만듭니다. 이러한 방식으로 여러분은 또한 반복을 피할 수 있습니다. 만약에 어떤 수학자가 2는 사실 3이라는 것을 밝혀내서, 여러분이 프로그램을 수정해야만 한다면 어떡할까요? 여러분은 단지 doubleMe를 <code>x + x + x</code>로 재정의할 수 있고, doubleUs는 doubleMe를 호출하므로, doubleUs는 자동적으로 2가 3인 이 이상한 신세계에서 동작할 것입니다.
+
+This is a very simple example of a common pattern you will see throughout Haskell. Making basic functions that are obviously correct and then combining them into more complex functions. This way you also avoid repetition. What if some mathematicians figured out that 2 is actually 3 and you had to change your program? You could just redefine doubleMe to be x + x + x and since doubleUs calls doubleMe, it would automatically work in this strange new world where 2 is 3.
+
+하스켈에서의 함수들은 특정한 순서로 배치되어있지 않아도 됩니다. 따라서, doubleMe를 먼저 정의한 뒤 doubleUs를 정의해도 되고, 이 반대로 해도 상관없습니다.
+
+Functions in Haskell don't have to be in any particular order, so it doesn't matter if you define doubleMe first and then doubleUs or if you do it the other way around.
+
+이제 우리는 어떤 숫자에 2를 곱하는데, 오직 그 숫자가 100 이하일 경우에만 그렇게 하는 함수를 만들어 볼 것입니다. 왜냐하면 100보다 큰 숫자는 이미 그 자체로 큰 숫자니까요.
+
+Now we're going to make a function that multiplies a number by 2 but only if that number is smaller than or equal to 100 because numbers bigger than 100 are big enough as it is!
+
+gd::pre
+doubleSmallNumber x = if x > 100
+                        then x
+                        else x*2
+gd::endpre
+
+여기서 우리는 하스켈의 if문을 도입했습니다. 여러분은 아마도 다른 언어에서의 if문에 익숙하실 것입니다. 하스켈의 if문과 명령형 언어에서의 if문과의 차이점은, 하스켈에서는 else 부분이 필수적이라는 것입니다. 명령형 언어에서는 만약 조건이 만족되지 않으면 몇 개의 단계를 생략할 수 있습니다. 그러나, 하스켈에서는 모든 표현식과 함수는 반드시 무언가를 반환해야만 합니다. 우리는 저 if문을 한 줄로 작성할 수도 있었습니다만, 저는 이 편이 좀 더 가독성있다고 생각합니다. 하스켈에서의 if문에 대해 특기할만한 또 한 가지의 사항은, if문이 <em>표현식</em>이라는 것입니다. 표현식이란 기본적으로 값을 반환하는 코드의 조각입니다. 5는 표현식입니다. 왜냐하면 5는 5를 반환하기 때문입니다. 4 + 8도 표현식이고, x + y도 표현식입니다. 왜냐하면 x와 y의 합을 반환하기 때문입니다. else가 필수적이기 때문에, if문은 언제나 무언가를 반환할 것이고 따라서 이것이 if문이 표현식인 이유입니다. 만약 우리가 위의 doubleSmallNumber에서 반환된 숫자에 1을 더하기를 원한다면, 우리는 함수의 몸체를 다음과 같이 정의할 수 있었을 것입니다.
+
+Right here we introduced Haskell's if statement. You're probably familiar with if statements from other languages. The difference between Haskell's if statement and if statements in imperative languages is that the else part is mandatory in Haskell. In imperative languages you can just skip a couple of steps if the condition isn't satisfied but in Haskell every expression and function must return something. We could have also written that if statement in one line but I find this way more readable. Another thing about the if statement in Haskell is that it is an expression. An expression is basically a piece of code that returns a value. 5 is an expression because it returns 5, 4 + 8 is an expression, x + y is an expression because it returns the sum of x and y. Because the else is mandatory, an if statement will always return something and that's why it's an expression. If we wanted to add one to every number that's produced in our previous function, we could have written its body like this.
+
+gd::pre
+doubleSmallNumber' x = (if x > 100 then x else x*2) + 1
+gd::endpre
+
+만약 우리가 괄호를 생략했다면, 1은 오직 x가 100보다 크지 않았을 때에만 더해졌을 것입니다. 한편, 함수명 뒤의 아포스트로피 문자(')에 주목하십시오. 아포스트로피 문자는 하스켈의 문법[syntax]에서 어떤 특별한 의미도 가지고 있지 않으며, 함수명에서 사용할 수 있는 유효한 문자입니다. 우리는 보통 이 문자를 사용해 (1) 함수의 엄격한[strict] 형태 (게으르지 않은 함수) 를 나타내거나, 혹은 (2) 함수나 변수의 약간 변경된 형태을 나타냅니다. '가 함수명에서 유효한 문자이기 때문에, 우리는 다음과 같은 함수를 만들 수 있습니다.
+
+Had we omitted the parentheses, it would have added one only if x wasn't greater than 100. Note the ' at the end of the function name. That apostrophe doesn't have any special meaning in Haskell's syntax. It's a valid character to use in a function name. We usually use ' to either denote a strict version of a function (one that isn't lazy) or a slightly modified version of a function or a variable. Because ' is a valid character in functions, we can make a function like this.
+
+gd::pre
+conanO'Brien = "It's a-me, Conan O'Brien!"
+gd::endpre
+
+여기서 주목할만한 사항은 두 가지입니다. 첫째로, 함수명에서, Conan씨의 이름을 대문자로 시작하지 않았다는 것입니다. 그 이유는 함수명은 대문자로 시작할 수 없기 때문입니다. 왜 그런가에 대해서는 나중에 살펴볼 것입니다. 둘째로, 이 함수는 어떤 매개변수도 취하지 않는다는 것입니다. 함수가 어떠한 매개변수도 취하지 않을 때, 우리는 보통 그것을 두고 <em>정의[definition]</em> (혹은 <em>이름[name]</em>) 라고 합니다. 한 번 이름과 함수를 정의하고 나면, 우리는 이름과 함수가 무엇을 의미하는지 변경할 수 없기 때문에, <code>conanO'Brien</code>과 문자열 "It's a-me, Conan O'Brien!"은 상호교환적으로 사용될 수 있습니다.
+
+There are two noteworthy things here. The first is that in the function name we didn't capitalize Conan's name. That's because functions can't begin with uppercase letters. We'll see why a bit later. The second thing is that this function doesn't take any parameters. When a function doesn't take any parameters, we usually say it's a definition (or a name). Because we can't change what names (and functions) mean once we've defined them, conanO'Brien and the string "It's a-me, Conan O'Brien!" can be used interchangeably.
+
+gd::h2
+리스트 입문
+An intro to lists
+
+현실에서의 쇼핑 리스트처럼, 하스켈에서의 리스트는 아주 유용합니다. 리스트는 가장 많이 사용되는 데이터 구조이며, 수많은 다른 방법으로 사용되어 여러가지의 문제들을 모형화[model]하고 해결할 수 있습니다. 리스트는 그야말로 「대단」합니다! 이 절에서 우리는 리스트, 문자열 (문자열은 리스트임), 그리고 리스트 구성[list comprehension]의 기본적인 사항들을 살펴봅니다.<br><br>※ (역주) list comprehension에서의 comprehension은 이해력이라는 의미가 아닌 것 같습니다. comprehension의 어원을 보니 라틴어 comprehendere가 나오는데, 영어로는 seize[붙잡다], comprise[구성하다] 라는 뜻이라고 합니다. (구글에서 word origin comprehension 또는 define comprehension이라고 검색하면 어원 확인 가능)
+
+Much like shopping lists in the real world, lists in Haskell are very useful. It's the most used data structure and it can be used in a multitude of different ways to model and solve a whole bunch of problems. Lists are SO awesome. In this section we'll look at the basics of lists, strings (which are lists) and list comprehensions.
+
+하스켈에서, <em>리스트는 동일한 타입의 원소로만 구성될 수 있는</em>[homonegeous] 데이터 구조입니다. 따라서, 여러개의 같은 타입인 원소들을 저장합니다. 요컨대, 우리는 정수 리스트나 문자 리스트를 가질 수 있지만, 몇 개의 정수와 몇 개의 문자로 이루어진 리스트는 가질 수는 없습니다. 이제, 리스트를 만들어 보겠습니다!
+
+In Haskell, lists are a homogenous data structure. It stores several elements of the same type. That means that we can have a list of integers or a list of characters but we can't have a list that has a few integers and then a few characters. And now, a list!
+
+<em>노트</em>: 우리는 <code>let</code> 키워드를 사용해 이름을 GHCI에서 정의할 수 있습니다. <code>let a = 1</code>를 GHCI 내에서 실행하는 것은 <code>a = 1</code>을 스크립트에 작성하고 로딩하는 것과 같습니다.
+
+Note: We can use the let keyword to define a name right in GHCI. Doing let a = 1 inside GHCI is the equivalent of writing a = 1 in a script and then loading it.
+
+gd::pre
+ghci> let lostNumbers = [4,8,15,16,23,42]
+ghci> lostNumbers
+[4,8,15,16,23,42]
+gd::endpre
+
+보시다시피, 리스트는 대괄호로 표현되며, 리스트 내의 값들은 콤마 문자로 분리됩니다. 만약 우리가 [1,2,'a',3,'b','c',4] 같은 리스트를 시도한다면, 하스켈은 문자는 숫자가 아니라고 항의할 것입니다. (한편, 문자란 따옴표 사이의 하나의 문자로 표현됩니다.) 문자 얘기를 꺼내서 말인데, 문자열이란 단지 문자의 리스트입니다. "hello"는 단지 ['h','e','l','l','o']의 문법적 설탕에 지나지 않습니다. 문자열이 리스트이기 때문에, 우리는 리스트를 다루는 함수를 문자열에 사용할 수 있으며, 이는 대단히 편리합니다.
+
+As you can see, lists are denoted by square brackets and the values in the lists are separated by commas. If we tried a list like [1,2,'a',3,'b','c',4], Haskell would complain that characters (which are, by the way, denoted as a character between single quotes) are not numbers. Speaking of characters, strings are just lists of characters. "hello" is just syntactic sugar for ['h','e','l','l','o']. Because strings are lists, we can use list functions on them, which is really handy.
+
+두 리스트를 합치는 것은 흔한 작업입니다. 이는 <code>++</code>연산자를 사용함으로써 수행됩니다.
+
+A common task is putting two lists together. This is done by using the ++ operator.
+
+gd::pre
+ghci> [1,2,3,4] ++ [9,10,11,12]
+[1,2,3,4,9,10,11,12]
+ghci> "hello" ++ " " ++ "world"
+"hello world"
+ghci> ['w','o'] ++ ['o','t']
+"woot"
+gd::endpre
+
+긴 문자열에서 ++ 연산자를 반복적으로 사용할 때를 주의하십시오. 두 개의 리스트를 합칠 때 (원소가 한개뿐인 리스트[singleton list]를 어떤 리스트 뒤에 추가하는 경우일지라도), 내부적으로, 하스켈은 ++의 좌측에 있는 리스트의 끝부분까지 도달해야 합니다. 그렇게 크기 않은 리스트를 다루고 있는 거라면 문제가 되지 않습니다. 하지만 항목 5천만 개 길이의 리스트의 끝에 무언가를 추가하는 것은 약간 시간이 걸릴 것입니다. 그러나, <code>:</code> 연산자를 사용해 리스트의 시작점에 무언가를 추가하는 것은 순식간입니다. (: 연산자는 cons 연산자라고도 합니다.)
+
+Watch out when repeatedly using the ++ operator on long strings. When you put together two lists (even if you append a singleton list to a list, for instance: [1,2,3] ++ [4]), internally, Haskell has to walk through the whole list on the left side of ++. That's not a problem when dealing with lists that aren't too big. But putting something at the end of a list that's fifty million entries long is going to take a while. However, putting something at the beginning of a list using the : operator (also called the cons operator) is instantaneous.
+
+gd::pre
+ghci> 'A':" SMALL CAT"
+"A SMALL CAT"
+ghci> 5:[1,2,3,4,5]
+[5,1,2,3,4,5]
+gd::endpre
+
+: 연산자가 하나의 숫자와 숫자 리스트, 혹은 하나의 문자와 문자 리스트를 취하는 반면, ++ 연산자는 두 개의 리스트를 취하는 점에 주목하십시오. 여러분이 하나의 원소를 리스트의 끝에 ++를 사용해 추가한다고 할 지라도, 여러분은 그 원소를 대괄호로 둘러싸서 리스트가 되도록 해야 합니다.
+
+Notice how : takes a number and a list of numbers or a character and a list of characters, whereas ++ takes two lists. Even if you're adding an element to the end of a list with ++, you have to surround it with square brackets so it becomes a list.
+
+[1,2,3]은 실제로는 단지 1:2:3:[]의 문법적 설탕입니다. []은 빈 리스트입니다. 만약 우리가 3을 빈 리스트 앞에 붙이면[prepend], [3]이 됩니다. 만약 우리가 2를 [3] 앞에 붙이면, [2,3]이 됩니다. 이런 식으로 계속됩니다.
+
+[1,2,3] is actually just syntactic sugar for 1:2:3:[]. [] is an empty list. If we prepend 3 to it, it becomes [3]. If we prepend 2 to that, it becomes [2,3], and so on.
+
+<em>노트</em>: [] 과 [ [] ] 과 [ [], [], [] ]은 각각 다른 것입니다. 첫번째는 빈 리스트입니다. 두번째는 하나의 빈 리스트를 포함하는 리스트입니다. 세번째는 세 개의 빈 리스트를 포함하는 리스트입니다.
+
+Note: [], [[]] and[[],[],[]] are all different things. The first one is an empty list, the seconds one is a list that contains one empty list, the third one is a list that contains three empty lists.
+
+만약 여러분이 리스트에서 원소 하나를 인덱스를 통해 얻고 싶다면, <code>!!</code>를 사용하십시오. 인덱스는 0부터 시작합니다.
+
+If you want to get an element out of a list by index, use !!. The indices start at 0.
+
+gd::pre
+ghci> "Steve Buscemi" !! 6
+'B'
+ghci> [9.4,33.2,96.2,11.2,23.25] !! 1
+33.2
+gd::endpre
+
+하지만 만약 원소가 4개밖에 없는 리스트에서 6번째 원소를 꺼내려고 한다면, 오류를 얻게 될 것이므로 주의하십시오!
+
+But if you try to get the sixth element from a list that only has four elements, you'll get an error so be careful!
+
+리스트는 또한 리스트를 포함할 수 있습니다. 그 리스트 또한 리스트를 포함하는 리스트를 포함하는 리스트를 포함하는⋯
+
+Lists can also contain lists. They can also contain lists that contain lists that contain lists …
+
+gd::pre
+ghci> let b = [[1,2,3,4],[5,3,3,3],[1,2,2,3,4],[1,2,3]]
+ghci> b
+[[1,2,3,4],[5,3,3,3],[1,2,2,3,4],[1,2,3]]
+ghci> b ++ [[1,1,1,1]]
+[[1,2,3,4],[5,3,3,3],[1,2,2,3,4],[1,2,3],[1,1,1,1]]
+ghci> [6,6,6]:b
+[[6,6,6],[1,2,3,4],[5,3,3,3],[1,2,2,3,4],[1,2,3]]
+ghci> b !! 2
+[1,2,2,3,4]
+gd::endpre
+
+리스트 내의 리스트들은 길이가 다를 수는 있지만 타입이 다를 수는 없습니다. 마치 여러분이 몇 개의 문자와 몇 개의 숫자로 이루어진 리스트를 가질 수 없는 것처럼, 여러분은 몇 개의 문자 리스트와 몇 개의 숫자 리스트로 이루어진 리스트를 가질 수는 없습니다.
+
+The lists within a list can be of different lengths but they can't be of different types. Just like you can't have a list that has some characters and some numbers, you can't have a list that has some lists of characters and some lists of numbers.
+
+리스트는, 만약 포함하고 있는 원소들이 비교될 수 있으면, 비교될 수 있습니다. <code><</code>, <code><=</code>, <code>></code>, <code>>=</code>를 사용해 리스트를 비교할 때, 리스트는 문자 순서[lexicographical order]대로 비교됩니다. 먼저 head (주: 첫번째 원소) 끼리 비교됩니다. 만약 head가 서로 같으면, 두번째 원소가 비교됩니다. 이런 식으로 계속됩니다.
+
+Lists can be compared if the stuff they contain can be compared. When using <, <=, > and >= to compare lists, they are compared in lexicographical order. First the heads are compared. If they are equal then the second elements are compared, etc.
+
+gd::pre
+ghci> [3,2,1] > [2,1,0]
+True
+ghci> [3,2,1] > [2,10,100]
+True
+ghci> [3,4,2] > [3,4]
+True
+ghci> [3,4,2] > [2,4]
+True
+ghci> [3,4,2] == [3,4,2]
+True
+gd::endpre
+
+리스트를 가지고 또 무엇을 할 수 있을까요? 다음은 리스트를 대상으로 작동하는 몇 가지 기본적인 함수들입니다.
+
+What else can you do with lists? Here are some basic functions that operate on lists.
+
+<code>head</code>는 하나의 리스트를 취해서 해당 리스트의 head를 반환합니다. 리스트의 head는 본질적으로 리스트의 첫번째 원소입니다.
+
+head takes a list and returns its head. The head of a list is basically its first element.
+
+gd::pre
+ghci> head [5,4,3,2,1]
+5
+gd::endpre
+
+<code>tail</code>은 하나의 리스트를 취해서 해당 리스트의 tail을 반환합니다. 다른 말로 하자면, tail은 리스트의 head를 잘라냅니다.
+
+tail takes a list and returns its tail. In other words, it chops off a list's head.
+
+gd::pre
+ghci> tail [5,4,3,2,1]
+[4,3,2,1]
+gd::endpre
+
+<code>last</code>는 하나의 리스트를 취해서 해당 리스트의 마지막 원소를 반환합니다.
+
+last takes a list and returns its last element.
+
+gd::pre
+ghci> last [5,4,3,2,1]
+1
+gd::endpre
+
+<code>init</code>은 하나의 리스트를 취해서 마지막 원소를 제외한 모든 것을 반환합니다.
+
+init takes a list and returns everything except its last element.
+
+gd::pre
+ghci> init [5,4,3,2,1]
+[5,4,3,2]
+gd::endpre
+
+만약 우리가 리스트를 애벌레라고 생각해 본다면, 다음과 같은 구조일 것입니다.
+
+If we think of a list as a monster, here's what's what.
+
+gd::pre
+head
+↓┌→tail
+■□□□□
+init←┘↑
+        last
+gd::endpre
+
+하지만 우리가 빈 리스트의 head를 얻으려고 한다면 어떤 일이 일어날까요?
+
+But what happens if we try to get the head of an empty list?
+
+gd::pre
+ghci> head []
+*** Exception: Prelude.head: empty list
+gd::endpre
+
+헉! 오류가 납니다! 애벌레가 없다면, head도 없는 것이겠죠. head, tail, last, 그리고 init을 사용할 때, 빈 리스트에 사용하지 않도록 주의하십시오. 이 오류는 컴파일 타임에 포착될 수 없으므로 실수로 빈 리스트로부터 무언가를 가져오지 않도록 조심하는 것이 언제나 좋은 습관입니다.
+
+Oh my! It all blows up in our face! If there's no monster, it doesn't have a head. When using head, tail, last and init, be careful not to use them on empty lists. This error cannot be caught at compile time so it's always good practice to take precautions against accidentally telling Haskell to give you some elements from an empty list.
+
+<code>length</code>는 하나의 리스트를 취해서 해당 리스트의 길이를 반환합니다 (명백하게도).
+
+length takes a list and returns its length, obviously.
+
+gd::pre
+ghci> length [5,4,3,2,1]
+5
+gd::endpre
+
+<code>null</code>은 리스트가 비었는지의 여부를 검사합니다. 만약 비었다면, True를 반환하고, 그렇지 않으면 False를 반환합니다. xs == [] 대신 이 함수를 사용하십시오 (만약 여러분이 xs라는 이름의 리스트를 가지고 있다면).
+
+null checks if a list is empty. If it is, it returns True, otherwise it returns False. Use this function instead of xs == [] (if you have a list called xs)
+
+gd::pre
+ghci> null [1,2,3]
+False
+ghci> null []
+True
+gd::endpre
+
+<code>reverse</code>는 리스트를 반전시킵니다.
+
+reverse reverses a list.
+
+gd::pre
+ghci> reverse [5,4,3,2,1]
+[1,2,3,4,5]
+gd::endpre
+
+<code>take</code>는 숫자 하나와 리스트 하나를 취합니다. 그리고 리스트의 시작점부터 그 숫자의 양만큼 리스트의 원소들을 추출합니다.
+
+take takes number and a list. It extracts that many elements from the beginning of the list. Watch.
+
+gd::pre
+ghci> take 3 [5,4,3,2,1]
+[5,4,3]
+ghci> take 1 [3,9,3]
+[3]
+ghci> take 5 [1,2]
+[1,2]
+ghci> take 0 [6,6,6]
+[]
+gd::endpre
+
+리스트에 있는 것보다 더 많은 원소를 취하려고 한다면, 단순히 리스트 자체를 반환하는 것에 주목하십시오. 만약 우리가 0개의 원소를 취하려고 한다면, 우리는 빈 리스트를 얻습니다.
+
+See how if we try to take more elements than there are in the list, it just returns the list. If we try to take 0 elements, we get an empty list.
+
+<code>drop</code>도 비슷한 방식으로 작동합니다. 리스트의 시작점부터 n개의 원소들을 탈락시키는 것만 아니라면요.
+
+drop works in a similar way, only it drops the number of elements from the beginning of a list.
+
+gd::pre
+ghci> drop 3 [8,4,2,1,5,6]
+[1,5,6]
+ghci> drop 0 [1,2,3,4]
+[1,2,3,4]
+ghci> drop 100 [1,2,3,4]
+[]
+gd::endpre
+
+<code>maximum</code>은 순서를 가지고 배치될 수 있는 원소들로 이루어진 리스트를 취해 가장 큰 원소를 반환합니다.
+
+maximum takes a list of stuff that can be put in some kind of order and returns the biggest element.
+
+<code>minimum</code>은 가장 작은 원소를 반환합니다.
+
+minimum returns the smallest.
+
+gd::pre
+ghci> minimum [8,4,2,1,5,6]
+1
+ghci> maximum [1,9,2,3,4]
+9 
+gd::endpre
+
+<code>sum</code>은 숫자의 리스트를 취해서 그 합을 반환합니다.
+
+sum takes a list of numbers and returns their sum.
+
+<code>product</code>
+
+product takes a list of numbers and returns their product.
+
+gd::pre
+ghci> sum [5,2,1,6,3,2,5,7]
+31
+ghci> product [6,2,1,2]
+24
+ghci> product [1,2,5,6,7,9,2,0]
+0
+gd::endpre
+
+<code>elem</code>은 어떤 대상 하나와 리스트 하나를 취한 뒤, 그 대상이 그 리스트의 원소인지의 여부를 반환합니다. 이 함수는 대개 infix 함수로 호출되는데 왜냐하면 그 편이 읽기가 더 쉽기 때문입니다.
+
+elem takes a thing and a list of things and tells us if that thing is an element of the list. It's usually called as an infix function because it's easier to read that way.
+
+gd::pre
+ghci> 4 `elem` [3,4,5,6]
+True
+ghci> 10 `elem` [3,4,5,6]
+False
+gd::endpre
+
+이상이 리스트 위에서 작동하는 얼마간의 함수들이었습니다. 우리는 더 많은 리스트 함수들을 "7장. 모듈"에서 알아볼 것입니다.
+
+Those were a few basic functions that operate on lists. We'll take a look at more list functions later
+
+gd::h2
+범위 지정
+Texas ranges
+
+만약 우리가 1부터 20사이의 모든 숫자들로 이루어진 리스트를 가지고 싶다면 어떡할까요? 아 물론, 일일히 다 적을 수도 있지만, 자신이 사용하는 프로그래밍 언어로부터 탁월함을 요구하는 「신사」에게, 그렇게 하는 것이 하나의 해결책이 되지 않으리라는 것은 자명합니다. 대신, 우리는 범위[range]를 사용합니다. 범위란, 열거될[enumerated] 수 있는 원소들의 등차수열[arithmetic sequence]인 리스트를 만드는 하나의 방법입니다. 숫자는 열거될 수 있지요. 하나, 둘, 셋, 넷 등등으로. 문자 또한 열거될 수 있습니다. 알파벳은 A부터 Z까지의 문자들의 열거입니다. 하지만 사람의 이름은 열거될 수 없습니다. "John"의 뒤에는 무엇이 올까요? 저로서는 잘 모르겠습니다.
+
+What if we want a list of all numbers between 1 and 20? Sure, we could just type them all out but obviously that's not a solution for gentlemen who demand excellence from their programming languages. Instead, we'll use ranges. Ranges are a way of making lists that are arithmetic sequences of elements that can be enumerated. Numbers can be enumerated. One, two, three, four, etc. Characters can also be enumerated. The alphabet is an enumeration of characters from A to Z. Names can't be enumerated. What comes after "John"? I don't know.
+
+1부터 20까지의 모든 자연수를 포함하는 리스트를 만드려면, 단지 <code>[1..20]</code>이라고만 적으면 됩니다. 이렇게 하는 것은 <code>[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]</code>를 적는 것과 동치이며, 긴 열거 수열을 직접 적는 것이 바보같다는 점을 제외하면 둘 사이에 차이점은 없습니다.
+
+To make a list containing all the natural numbers from 1 to 20, you just write [1..20]. That is the equivalent of writing [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20] and there's no difference between writing one or the other except that writing out long enumeration sequences manually is stupid.
+
+gd::pre
+ghci> [1..20]
+[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]
+ghci> ['a'..'z']
+"abcdefghijklmnopqrstuvwxyz"
+ghci> ['K'..'Z']
+"KLMNOPQRSTUVWXYZ"
+gd::endpre
+
+범위의 장점은 폭[step]을 명시할 수 있다는 것입니다. 만약 우리가 1과 20 사이의 모든 짝수를 원한다면 어떡할까요? 혹은 1과 20 사이의 매 3번째 숫자를 원한다면?
+
+Ranges are cool because you can also specify a step. What if we want all even numbers between 1 and 20? Or every third number between 1 and 20?
+
+gd::pre
+ghci> [2,4..20]
+[2,4,6,8,10,12,14,16,18,20]
+ghci> [3,6..20]
+[3,6,9,12,15,18]
+gd::endpre
+
+이는 단순히 처음의 두 원소를 콤마로 분리한 뒤 상한이 무엇인지 명시하면 되는 문제입니다. 꽤 유용하긴 하지만, 일부 사람들이 기대하는 것만큼 유용하지는 않습니다. 여러분은 [1,2,4,8,16..100]을 입력한 뒤 모든 2의 거듭제곱을 얻으리라 기대할 수 없습니다. 그 이유는, 첫째로, 여러분은 오직 하나의 폭만을 명시할 수 있기 때문입니다. 그리고 둘째로, 등차가 아닌 일부 수열들은 만약 오직 처음의 일부 항으로만 주어지면 애매하기 때문입니다.
+
+It's simply a matter of separating the first two elements with a comma and then specifying what the upper limit is. While pretty smart, ranges with steps aren't as smart as some people expect them to be. You can't do [1,2,4,8,16..100] and expect to get all the powers of 2. Firstly because you can only specify one step. And secondly because some sequences that aren't arithmetic are ambiguous if given only by a few of their first terms.
+
+20부터 1까지의 모든 숫자로 이루어진 리스트를 만드려면, [20..1]이라고는 할 수 없습니다. [20,19..1]이라고 해야 합니다.
+
+To make a list with all the numbers from 20 to 1, you can't just do [20..1], you have to do [20,19..1].
+
+부동소수점 수를 범위에서 사용할 때를 주의하십시오! 부동소수점 수는 (정의에 의해) 완전히 정밀하지 않기 때문에, 범위에서의 부동소수점 수 사용은 꽤 파격적인 결과를 생산할 수 있습니다.
+
+Watch out when using floating point numbers in ranges! Because they are not completely precise (by definition), their use in ranges can yield some pretty funky results.
+
+gd::pre
+ghci> [0.1, 0.3 .. 1]
+[0.1,0.3,0.5,0.7,0.8999999999999999,1.0999999999999999]
+gd::endpre
+
+리스트 범위에서 부동소수점 수를 사용하지 않기를 저는 충고하는 바입니다.
+
+My advice is not to use them in list ranges.
+
+여러분은 또한 범위를 사용해 무한 리스트를 만들 수 있는데, 그 방법은 상한을 명시하지 않는 것입니다. 추후에 우리는 무한 리스트에 대해 더욱 상세히 알아볼 것입니다. 우선 지금은, 13의 배수 첫 24개를 어떻게 하면 얻을 수 있을지를 검토해 봅시다. 물론 [13,26..24*13]이라고 할 수 있습니다. 하지만 더 좋은 방법이 있습니다. 그것은 <code>take 24 [13,26..]</code>라고 하는 것입니다. 하스켈은 게으르기 때문에, 무한 리스트를 바로 평가하려고 시도하지 않을 것입니다. 왜냐하면 무한 리스트는 절대 끝나지 않을 테니까요. 하스켈은 여러분이 무한 리스트에서 무엇을 얻고자 하는지를 보기 위해 기다릴 것입니다. 그리고 여기서 하스켈은 여러분이 처음 24개의 원소를 원한다는 것을 보았고 하스켈은 기쁘게 따를 것입니다.
+
+You can also use ranges to make infinite lists by just not specifying an upper limit. Later we'll go into more detail on infinite lists. For now, let's examine how you would get the first 24 multiples of 13. Sure, you could do [13,26..24*13]. But there's a better way: take 24 [13,26..]. Because Haskell is lazy, it won't try to evaluate the infinite list immediately because it would never finish. It'll wait to see what you want to get out of that infinite lists. And here it sees you just want the first 24 elements and it gladly obliges.
+
+무한 리스트를 생성하는 한 줌의 함수들은 다음과 같습니다.
+
+A handful of functions that produce infinite lists:
+
+<code>cycle</code>은 하나의 리스트를 취한 후 그 리스트를 순환시켜서 무한 리스트로 만듭니다. 만약 여러분이 결과를 표시하려고 한다면, 영원히 계속될 것이므로 어딘가에서 잘라내야 합니다.
+
+cycle takes a list and cycles it into an infinite list. If you just try to display the result, it will go on forever so you have to slice it off somewhere.
+
+gd::pre
+ghci> take 10 (cycle [1,2,3])
+[1,2,3,1,2,3,1,2,3,1]
+ghci> take 12 (cycle "LOL ")
+"LOL LOL LOL " 
+gd::endpre
+
+<code>repeat</code>은 원소 하나를 취해서 그 원소만으로 이루어진 무한 리스트를 생성합니다. 이것은 마치 하나의 원소만을 가진 리스트를 순환시키는 것과 같습니다.
+
+repeat takes an element and produces an infinite list of just that element. It's like cycling a list with only one element.
+
+gd::pre
+ghci> take 10 (repeat 5)
+[5,5,5,5,5,5,5,5,5,5]
+gd::endpre
+
+그럼에도 불구하고, 만약 여러분이 몇 개의 같은 원소로 된 리스트를 원한다면, <code>replicate</code> 함수를 사용하는 것이 더 간단합니다. <code>replicate 3 10</code>은 [10,10,10]을 반환합니다.
+
+Although it's simpler to just use the replicate function if you want some number of the same element in a list. replicate 3 10 returns [10,10,10].
+
+gd::h2
+리스트 구성
+I'm a list comprehension
+
+만약 여러분이 수학 과목을 들어본 적이 있다면, 아마도 <em>집합 구성</em>을 만나본 적이 있으실 것입니다. 집합 구성은 일반적으로 일반적인 집합들로부터 더욱 특정한 집합을 구성하기 위해 사용됩니다. 첫 열 개의 짝수 자연수를 포함하는 집합에 대한 기본적인 구성은 <code>S = { 2*x | x∈N, x≤10 }</code>입니다. 파이프 기호<code>|</code>의 앞부분은 출력함수[output function]라고 불리며, x는 변수이고, N은 입력 집합이고, x <= 10은 술어[predicate]입니다. 요컨대 이 집합은 저 술어를 만족하는 모든 자연수가 두 배가 된 값을 포함한다는 것입니다.
+
+If you've ever taken a course in mathematics, you've probably run into set comprehensions. They're normally used for building more specific sets out of general sets. A basic comprehension for a set that contains the first ten even natural numbers is set notation. The part before the pipe is called the output function, x is the variable, N is the input set and x <= 10 is the predicate. That means that the set contains the doubles of all natural numbers that satisfy the predicate.
+
+만약 우리가 저것을 하스켈에서 작성하기를 원한다면, <code>take 10 [2,4..]</code>같이 할 수 있을 것입니다. 하지만, 만약 자연수의 첫 10개의 두 배를 원하는게 아니라, 자연수의 첫 10개에 적용되는 일종의 더욱 복잡한 함수를 원한다면 어떡할까요? 우리는 이 경우 리스트 구성을 사용할 수 있습니다. 리스트 구성은 집합 구성과 매우 유사합니다. 우선 지금은 일단 첫 10개의 짝수 구성하기에 중점을 두겠습니다. 우리가 사용할 수 있는 리스트 구성은 <code>[x*2 | x <- [1..10]]</code>입니다. x는 [1..10]으로부터 얻어지고 [1..10]의 모든 원소에 대해 (우리는 이 원소를 x에 속박시켰습니다), 우리는 그 원소를, 두 배가 되었기는 하지만, 얻습니다. 실제로 실행시켜 보겠습니다.
+
+If we wanted to write that in Haskell, we could do something like take 10 [2,4..]. But what if we didn't want doubles of the first 10 natural numbers but some kind of more complex function applied on them? We could use a list comprehension for that. List comprehensions are very similar to set comprehensions. We'll stick to getting the first 10 even numbers for now. The list comprehension we could use is [x*2 | x <- [1..10]]. x is drawn from [1..10] and for every element in [1..10] (which we have bound to x), we get that element, only doubled. Here's that comprehension in action.
+
+gd::pre
+ghci> [x*2 | x <- [1..10]]
+[2,4,6,8,10,12,14,16,18,20]
+gd::endpre
+
+보시다시피, 우리는 원하던 결과를 얻었습니다. 이제 이 리스트 구성에 조건을 (혹은 술어를) 추가해 봅시다. 술어는 속박하는 부분의 뒤에 작성되고, 속박하는 부분과 콤마로 분리됩니다. 예를 들어 우리가 원하는 것은 두 배가 된 원소이며 그것은 12보다 크거나 같다고 합시다.
+
+As you can see, we get the desired results. Now let's add a condition (or a predicate) to that comprehension. Predicates go after the binding parts and are separated from them by a comma. Let's say we want only the elements which, doubled, are greater than or equal to 12.
+
+gd::pre
+ghci> [x*2 | x <- [1..10], x*2 >= 12]
+[12,14,16,18,20]
+gd::endpre
+
+잘 작동하는군요. 그럼 만약 우리가 50부터 100까지의 수 중에 7로 나누어졌을 때 나머지가 3인 수들을 원한다면 어떻게 해야 할까요? 이는 간단합니다.
+
+Cool, it works. How about if we wanted all numbers from 50 to 100 whose remainder when divided with the number 7 is 3? Easy.
+
+gd::pre
+ghci> [ x | x <- [50..100], x `mod` 7 == 3]
+[52,59,66,73,80,87,94] 
+gd::endpre
+
+성공적입니다. 술어를 통해 필요없는 부분을 제거하는 것은 또한 <em>필터링</em>이라고도 불립니다. 우리는 숫자 리스트 하나를 취해 술어를 통해 필터링했습니다. 이제 또다른 예시를 살펴봅시다. 우리가 10보다 큰 각각의 홀수는 "BANG!"으로 교체하고, 10보다 작은 각각의 홀수는 "BOOM!"으로 교체하는 리스트 구성을 원한다고 가정합시다. 만약 숫자가 홀수가 아니면, 리스트에서 배제합니다. 편의를 위해, 이 리스트 구성을 쉽게 재사용할 수 있도록 우리는 이 리스트 구성을 함수 내에 넣을 것입니다.
+
+Success! Note that weeding out lists by predicates is also called filtering. We took a list of numbers and we filtered them by the predicate. Now for another example. Let's say we want a comprehension that replaces each odd number greater than 10 with "BANG!" and each odd number that's less than 10 with "BOOM!". If a number isn't odd, we throw it out of our list. For convenience, we'll put that comprehension inside a function so we can easily reuse it.
+
+gd::pre
+boomBangs xs = [ if x < 10 then "BOOM!" else "BANG!" | x <- xs, odd x]
+gd::endpre
+
+이 리스트 구성의 마지막 부분이 술어입니다. 함수 <code>odd</code>는 홀수일 경우 True를 반환하고 짝수일 경우 False를 반환합니다. 모든 술어가 True로 평가되어야만 원소는 리스트에 포함됩니다.
+
+The last part of the comprehension is the predicate. The function odd returns True on an odd number and False on an even one. The element is included in the list only if all the predicates evaluate to True.
+
+gd::pre
+ghci> boomBangs [7..13]
+["BOOM!","BOOM!","BANG!","BANG!"]
+gd::endpre
+
+우리는 다수의 술어를 포함할 수 있습니다. 만약 우리가 13, 15, 19가 아닌 10부터 20사이의 숫자를 원한다고 한다면, 다음과 같이 할 수 있습니다.
+
+We can include several predicates. If we wanted all numbers from 10 to 20 that are not 13, 15 or 19, we'd do:
+
+gd::pre
+ghci> [ x | x <- [10..20], x /= 13, x /= 15, x /= 19]
+[10,11,12,14,16,17,18,20]
+gd::endpre
+
+우리는 리스트 구성에서 다수의 술어를 가질 수 있을 뿐만 아니라 (원소는 결과 리스트에 포함되기 위해서 반드시 모든 술어를 만족해야 합니다), 우리는 또한 다수의 리스트로부터 뽑을 수 있습니다. 다수의 리스트에서 값을 뽑을 때, 리스트 구성은 주어진 리스트의 모든 조합을 생성하고 우리가 제공하는 출력 함수를 통해 그 조합들을 합칩니다. 4의 길이를 가지는 두 개의 리스트로부터 값을 뽑는 리스트 구성에 의해 생성된 리스트는 16의 길이를 가지게 될 것입니다 (만약 필터링하지 않는다면). 만약 우리가 두 개의 리스트 [2,5,10]과 [8,10,11]을 가지고 있고 이 리스트 내의 숫자들 사이의 모든 가능한 조합의 곱을 얻고 싶다면, 다음과 같이 할 수 있습니다.
+
+Not only can we have multiple predicates in list comprehensions (an element must satisfy all the predicates to be included in the resulting list), we can also draw from several lists. When drawing from several lists, comprehensions produce all combinations of the given lists and then join them by the output function we supply. A list produced by a comprehension that draws from two lists of length 4 will have a length of 16, provided we don't filter them. If we have two lists, [2,5,10] and [8,10,11] and we want to get the products of all the possible combinations between numbers in those lists, here's what we'd do.
+
+gd::pre
+ghci> [ x*y | x <- [2,5,10], y <- [8,10,11]]
+[16,20,22,40,50,55,80,100,110]
+gd::endpre
+
+예상한대로, 새로운 리스트의 길이는 9입니다. 만약 우리가 가능한 값들 중 50보다 큰 것만을 원한다면 어떻게 해야 할까요?
+
+As expected, the length of the new list is 9. What if we wanted all possible products that are more than 50?
+
+gd::pre
+ghci> [ x*y | x <- [2,5,10], y <- [8,10,11], x*y > 50]
+[55,80,100,110]
+gd::endpre
+
+형용사의 리스트와 명사의 리스트를 결합시키는 리스트 구성은 어떨까요⋯재미를 위해서 말입니다.
+
+How about a list comprehension that combines a list of adjectives and a list of nouns … for epic hilarity.
+
+gd::pre
+ghci> let nouns = ["hobo","frog","pope"]
+ghci> let adjectives = ["lazy","grouchy","scheming"]
+ghci> [adjective ++ " " ++ noun | adjective <- adjectives, noun <- nouns]
+["lazy hobo","lazy frog","lazy pope","grouchy hobo","grouchy frog",
+"grouchy pope","scheming hobo","scheming frog","scheming pope"]
+gd::endpre
+
+알겠습니다! 이제 <code>length</code>를 직접 구현해 봅시다. 이를 <code>length'</code>라고 부르겠습니다.
+
+I know! Let's write our own version of length! We'll call it length'.
+
+gd::pre
+length' xs = sum [1 | _ <- xs]
+gd::endpre
+
+<code>_</code>는 리스트로부터 무엇을 뽑든지 관심이 없다는 것을 의미합니다. 따라서 결코 사용하지 않을 변수명을 작성하는 대신, 단순히 _라고 작성하였습니다. 이 함수는 리스트의 모든 원소를 1로 바꾼 후 그 리스트의 합을 구합니다. 요컨대 그 결과는 리스트의 길이가 될 것입니다.
+
+_ means that we don't care what we'll draw from the list anyway so instead of writing a variable name that we'll never use, we just write _. This function replaces every element of a list with 1 and then sums that up. This means that the resulting sum will be the length of our list.
+
+잠깐 주의를 환기하자면, 문자열은 리스트이기 때문에, 우리는 리스트 구성을 사용하여 문자열을 처리하거나 생성할 수 있습니다. 다음은 하나의 문자열을 취해 대문자 이외의 모든 문자를 제거합니다.
+
+Just a friendly reminder: because strings are lists, we can use list comprehensions to process and produce strings. Here's a function that takes a string and removes everything except uppercase letters from it.
+
+gd::pre
+removeNonUppercase st = [ c | c <- st, c `elem` ['A'..'Z']]
+gd::endpre
+
+시험해 봅시다.
+
+Testing it out:
+
+gd::pre
+ghci> removeNonUppercase "Hahaha! Ahahaha!"
+"HA"
+ghci> removeNonUppercase "IdontLIKEFROGS"
+"ILIKEFROGS"
+gd::endpre
+
+여기서는 술어가 모든 일을 합니다. 이 술어는 어떤 문자가 오직 리스트 ['A'..'Z']의 원소인 경우에만 새로운 리스트에 포함될 것임을 말하고 있습니다. 만약 리스트를 포함하는 리스트를 다루고 있다면, 중첩된 리스트 구성 또한 가능합니다. 예를 들어, 어떤 리스트가 여러개의 숫자 리스트로 이루어져 있다고 합시다. 이 리스트를 평탄화[flatten]하지 않으면서 모든 홀수를 제거해 봅시다.
+
+The predicate here does all the work. It says that the character will be included in the new list only if it's an element of the list ['A'..'Z']. Nested list comprehensions are also possible if you're operating on lists that contain lists. A list contains several lists of numbers. Let's remove all odd numbers without flattening the list.
+
+gd::pre
+ghci> let xxs = [[1,3,5,2,3,1,2,4,5],[1,2,3,4,5,6,7,8,9],[1,2,4,2,1,6,3,1,3,2,3,6]]
+ghci> [ [ x | x <- xs, even x ] | xs <- xxs]
+[[2,2,4],[2,4,6,8],[2,4,2,6,2,6]]
+gd::endpre
+
+여러분은 리스트 구성을 몇 줄에 걸쳐 작성할 수 있습니다. 따라서 여러분이 GHCI에 있는 게 아니라면, 긴 리스트 구성을 여러 줄으로 나누는 것이 좋습니다. 특히 리스트 구성이 중첩되어있는 경우라면요.
+
+You can write list comprehensions across several lines. So if you're not in GHCI, it's better to split longer list comprehensions across multiple lines, especially if they're nested.
+
+gd::h2
+튜플
+Tuples
+
+어떤 면에서, 튜플은 리스트와 비슷합니다. 둘 다 여러 개의 값을 하나의 값에 저장하는 방법이라는 점에서요. 하지만, 튜플과 리스트 사이에는 몇 가지 근본적인 차이점이 있습니다. 숫자의 리스트는, 숫자의 리스트입니다. 그것이 그 리스트의 타입이며, 또 그 리스트 안에 오직 하나의 숫자만 들어있든 혹은 무한한 양의 숫자가 들어있는 상관없습니다. 반면에, 튜플의 경우, 정확히 몇 개의 값을 결합하고자 하는지 알고 있을 때 사용되며, 튜플의 타입은 (1) 얼마나 많은 요소가 있는지, 그리고 (2) 그 요소들의 타입에 달려 있습니다. 튜플은 괄호로 표기되며, 튜플의 요소들은 콤마로 분리됩니다.
+
+In some ways, tuples are like lists — they are a way to store several values into a single value. However, there are a few fundamental differences. A list of numbers is a list of numbers. That's its type and it doesn't matter if it has only one number in it or an infinite amount of numbers. Tuples, however, are used when you know exactly how many values you want to combine and its type depends on how many components it has and the types of the components. They are denoted with parentheses and their components are separated by commas.
+
+또 하나의 중요한 차이점은 튜플을 이루는 요소들은 모두 동일한 타입일 필요가 없다는 것입니다. 리스트와는 다르게, 튜플은 여러가지 타입들의 조합을 포함할 수 있습니다.
+
+Another key difference is that they don't have to be homogenous. Unlike a list, a tuple can contain a combination of several types.
+
+어떻게 하면 우리가 하스켈에서 2차원 벡터를 표현할 수 있을지 생각해 보십시오. 한 가지 방법은 리스트를 사용하는 것입니다. 이렇게 해도 되긴 할 것입니다. 그래서, 만약 우리가 몇 개의 벡터를 리스트 내에 넣어서 2차원 평면상의 도형의 점들을 표현하고 싶으면 어떻게 하면 될까요? [[1,2],[8,11],[4,5]] 처럼 할 수 있을 것입니다. 이 방법의 문제점은, 우리가 [[1,2],[8,11,5],[4,5]] 처럼도 할 수 있다는 것인데, 이것은 여전히 리스트를 원소로 가지는 리스트이므로 하스켈의 입장에서는 문제가 없습니다. 그러나 약간 말이 되지 않는 것 같군요. 하지만, 크기가 2인 튜플 (이것은 쌍[pair]이라고도 불립니다) 은 그 자체의 타입이며, 이는 리스트가 몇 개의 쌍과 하나의 트리플 (크기가 3인 튜플) 을 가질 수 없다는 것을 의미합니다. 그러므로 튜플을 대신 사용합시다. 이 벡터들을 대괄호로 둘러싸는 대신, 우리는 괄호를 사용합니다. 즉, [(1,2),(8,11),(4,5)] 처럼 됩니다. 만약 우리가 [(1,2),(8,11,5),(4,5)]와 같은 도형을 만드려고 한다면 어떻게 될까요? 다음의 오류를 마주치게 됩니다.
+
+Think about how we'd represent a two-dimensional vector in Haskell. One way would be to use a list. That would kind of work. So what if we wanted to put a couple of vectors in a list to represent points of a shape on a two-dimensional plane? We could do something like [[1,2],[8,11],[4,5]]. The problem with that method is that we could also do stuff like [[1,2],[8,11,5],[4,5]], which Haskell has no problem with since it's still a list of lists with numbers but it kind of doesn't make sense. But a tuple of size two (also called a pair) is its own type, which means that a list can't have a couple of pairs in it and then a triple (a tuple of size three), so let's use that instead. Instead of surrounding the vectors with square brackets, we use parentheses: [(1,2),(8,11),(4,5)]. What if we tried to make a shape like [(1,2),(8,11,5),(4,5)]? Well, we'd get this error:
+
+gd::pre
+Couldn't match expected type `(t, t1)'
+against inferred type `(t2, t3, t4)'
+In the expression: (8, 11, 5)
+In the expression: [(1, 2), (8, 11, 5), (4, 5)]
+In the definition of `it': it = [(1, 2), (8, 11, 5), (4, 5)]
+gd::endpre
+
+이 오류 메시지에 따르면 우리는 쌍과 트리플을 같은 리스트에서 사용하려고 했는데, 이는 일어날 것으로 여겨지는 상황이 아닙니다. 여러분은 또한 [(1,2),("One",2)] 같은 리스트를 만들 수 없습니다. 왜냐하면 이 리스트의 첫번째 원소는 숫자의 쌍인 반면 두번째 원소는 문자열과 숫자로 이루어진 쌍이기 때문입니다. 튜플 역시 넓은 종류의 데이터를 표현하는 데 사용될 수 있습니다. 예를 들어, 만약 우리가 누군가의 이름과 나이를 하스켈로 표현하고 싶다면, 트리플을 사용해 ("Christopher","Walken",55) 처럼 나타낼 수 있습니다. 이 예시에서 보여졌듯, 튜플 역시 리스트를 포함할 수 있습니다.
+
+It's telling us that we tried to use a pair and a triple in the same list, which is not supposed to happen. You also couldn't make a list like [(1,2),("One",2)] because the first element of the list is a pair of numbers and the second element is a pair consisting of a string and a number. Tuples can also be used to represent a wide variety of data. For instance, if we wanted to represent someone's name and age in Haskell, we could use a triple: ("Christopher", "Walken", 55). As seen in this example, tuples can also contain lists.
+
+어떤 데이터가 얼마나 많은 요소를 가져야 하는지 사전에 알고 있는 경우, 튜플을 사용하십시오. 튜플은 더욱 엄격합니다. 왜냐하면 각기 다른 크기의 튜플은 각기 다른 타입이므로, 튜플에 원소 하나를 추가하는 일반적인 함수를 작성할 수 없습니다. 따라서 여러분은 쌍에 원소를 추가하는 함수 하나, 트리플에 원소를 추가하는 함수 하나, 4-tuple에 원소를 추가하는 함수 하나 등등을 작성해야 할 것입니다.
+
+Use tuples when you know in advance how many components some piece of data should have. Tuples are much more rigid because each different size of tuple is its own type, so you can't write a general function to append an element to a tuple — you'd have to write a function for appending to a pair, one function for appending to a triple, one function for appending to a 4-tuple, etc.
+
+원소를 하나만 가지는 리스트[singleton list]가 존재하는 반면, 원소를 하나만 가지는 튜플은 없습니다. 그런 튜플에 대해 생각해보면, 말이 되지 않습니다. 원소를 하나만 가지는 튜플은 단지 자신이 포함하고 있는 값일 뿐이며, 그렇기 때문에 그러한 튜플은 우리에게 이점이 없습니다.
+
+While there are singleton lists, there's no such thing as a singleton tuple. It doesn't really make much sense when you think about it. A singleton tuple would just be the value it contains and as such would have no benefit to us.
+
+리스트처럼, 튜플도 비교될 수 있습니다 (만약 그 요소가 비교될 수 있다면). 그러나, 다른 크기를 가진 두 개의 튜플은 비교될 수 없습니다. 반면, 다른 크기를 가진 두 개의 리스트는 비교될 수 있었습니다. 쌍에 대해 작동하는 두 개의 유용한 함수는 다음과 같습니다.
+
+Like lists, tuples can be compared with each other if their components can be compared. Only you can't compare two tuples of different sizes, whereas you can compare two lists of different sizes. Two useful functions that operate on pairs:
+
+<code>fst</code>는 하나의 쌍을 취해 그것의 첫번째 요소를 반환합니다.
+
+fst takes a pair and returns its first component.
+
+gd::pre
+ghci> fst (8,11)
+8
+ghci> fst ("Wow", False)
+"Wow"
+gd::endpre
+
+<code>snd</code>는 하나의 쌍을 취해 그것의 두번째 요소를 반환합니다. 아주 놀랍군요!
+
+snd takes a pair and returns its second component. Surprise!
+
+gd::pre
+ghci> snd (8,11)
+11
+ghci> snd ("Wow", False)
+False
+gd::endpre
+
+<em>노트</em>: 이 함수들은 오직 쌍에 대해서만 작동합니다. 트리플이나, 4-tuple, 5-tuple 등에 대해서는 작동하지 않을 것입니다. 우리는 나중에 튜플에서 데이터를 추출하는 여러가지 방법들에 대해서 알아볼 것입니다.
+
+Note: these functions operate only on pairs. They won't work on triples, 4-tuples, 5-tuples, etc. We'll go over extracting data from tuples in different ways a bit later.
+
+쌍을 원소로 가지는 리스트를 생성하는 멋진 함수가 하나 있습니다. 그것은 바로 <code>zip</code>입니다. 이 함수는 두 개의 리스트를 취한 뒤, 같은 위치에 있는 원소들을 쌍으로 만듦으로써 두 개의 리스트를 하나의 리스트로 묶어냅니다. 이것은 굉장히 간단한 함수입니다만, 아주 많은 용도로 사용될 수 있습니다. 이 함수는 두 개의 리스트를 어느 정도 결합하고 싶을 때 혹은 두 리스트를 동시에 순회하고 싶을 때 특히 유용합니다. 아래는 그 시연입니다.
+
+A cool function that produces a list of pairs: zip. It takes two lists and then zips them together into one list by joining the matching elements into pairs. It's a really simple function but it has loads of uses. It's especially useful for when you want to combine two lists in a way or traverse two lists simultaneously. Here's a demonstration.
+
+gd::pre
+ghci> zip [1,2,3,4,5] [5,5,5,5,5]
+[(1,5),(2,5),(3,5),(4,5),(5,5)]
+ghci> zip [1 .. 5] ["one", "two", "three", "four", "five"]
+[(1,"one"),(2,"two"),(3,"three"),(4,"four"),(5,"five")]
+gd::endpre
+
+이 함수는 원소들을 짝짓고 하나의 새로운 리스트를 생성합니다. 첫번째 원소들이 (결과 리스트의) 첫번째 원소에 들어가고, 두번째 원소들이 두번째 원소에 들어가는 식으로 계속됩니다. 쌍을 이루는 요소는 다른 타입을 지닐 수 있기 때문에, zip은 다른 타입으로 이루어진 두 개의 리스트를 취해 하나로 묶을 수 있다는 점에 주목하십시오. 만약 두 리스트의 길이가 일치하지 않는다면 어떻게 될까요?
+
+It pairs up the elements and produces a new list. The first element goes with the first, the second with the second, etc. Notice that because pairs can have different types in them, zip can take two lists that contain different types and zip them up. What happens if the lengths of the lists don't match?
+
+gd::pre
+ghci> zip [5,3,2,6,2,7,2,5,4,6,6] ["im","a","turtle"]
+[(5,"im"),(3,"a"),(2,"turtle")]
+gd::endpre
+
+단순히 긴 리스트가 잘려서 짧은 리스트의 길이에 맞추게 됩니다. 하스켈은 게으르기 때문에, 유한 리스트를 무한 리스트와 묶을 수 있습니다.
+
+The longer list simply gets cut off to match the length of the shorter one. Because Haskell is lazy, we can zip finite lists with infinite lists:
+
+gd::pre
+ghci> zip [1..] ["apple", "orange", "cherry", "mango"]
+[(1,"apple"),(2,"orange"),(3,"cherry"),(4,"mango")]
+gd::endpre
+
+다음은 튜플과 리스트 구성을 함께 사용하는 문제입니다. 세 변이 모두 10보다 작거나 같은 정수인 직각 삼각형 중에서, 어떤 직각 삼각형이 24의 둘레를 가질까요? 우선, 세 변이 모두 10보다 작거나 같은 삼각형 전부를 생성해 봅시다.
+
+Here's a problem that combines tuples and list comprehensions: which right triangle that has integers for all sides and all sides equal to or smaller than 10 has a perimeter of 24? First, let's try generating all triangles with sides equal to or smaller than 10:
+
+gd::pre
+ghci> let triangles = [ (a,b,c) | c <- [1..10], b <- [1..10], a <- [1..10] ]
+gd::endpre
+
+우리는 방금 세 개의 리스트로부터 값들을 뽑고, 출력함수가 그 값들을 하나의 트리플로 합쳤습니다. 만약 여러분이 GHCI에서 <code>triangles</code>를 입력해 이 리스트를 평가한다면, 세 변이 10보다 작거나 같은 모든 가능한 삼각형들의 리스트를 얻게 될 것입니다. 다음으로, 우리는 이 삼각형들이 모두 직각삼각형이어야 한다는 조건을 추가합니다. (변 c를 빗변이라고 했을 때) 우리는 또한 변 b는 변 c보다 크지 않고, 변 a는 변 b보다 크지 않다는 것을 고려함으로써 이 함수를 수정합니다.<br><br>역주: 위 내용에서 마지막 부분이 잘 이?해가 안 가서 생각을 좀 해 보았습니다: 직각삼각형 ABC가 있고 각 C가 직각이라고 하자. 그리고 각 A,B,C가 바라보는 변을 각각 a,b,c라고 하자. 근데, 삼각형의 내각의 합은 180도인데 (증명?), 지금 C가 90도를 차지한다고 했으니까, 나머지 90도를 각 A와 각 B가 나눠먹어야 할 것이다. 따라서 필연적으로 변a와 변b는 변c보다 작을수밖에 없으리라고 생각한다. 왜냐하면 각이 클수록 그 각이 바라보는 변도 커지기 때문이다 (증명?). 한편, 삼각형의 세 각이 다음의 관계에 있다고 가정하자: A <= B <= C. 내가 알고 있기로는 이렇게 가정해도 일반성을 잃지는 않는다고 한다 (증명?). 잘은 모르겠지만, A가 30도이고 B가 60도인 삼각형과 A가 60도이고 B가 30도인 삼각형은, 똑같은 모양이어서가 아닐까 싶다 (시계방향으로 90도 회전시키고 좌우대칭시키면 똑같아짐). 아무튼간에 이러한 이유에서, 저자는<br><code>b <- [1..10], a <- [1..10]</code>를<br><code>b <- [1..c], &nbsp;a <- [1..b]&nbsp;</code>로<br>바꾼 것이 아닌가 생각한다. 잠깐의 사색 끝.
+
+We're just drawing from three lists and our output function is combining them into a triple. If you evaluate that by typing out triangles in GHCI, you'll get a list of all possible triangles with sides under or equal to 10. Next, we'll add a condition that they all have to be right triangles. We'll also modify this function by taking into consideration that side b isn't larger than the hypothenuse and that side a isn't larger than side b.
+
+gd::pre
+ghci> let rightTriangles = [ (a,b,c) | c <- [1..10], b <- [1..c], a <- [1..b], a^2 + b^2 == c^2]
+gd::endpre
+
+거의 다 했습니다. 이제, 우리는 둘레가 24인 삼각형을 원한다는 조건을 추가합니다.
+
+We're almost done. Now, we just modify the function by saying that we want the ones where the perimeter is 24.
+
+gd::pre
+ghci> let rightTriangles' = [ (a,b,c) | c <- [1..10], b <- [1..c], a <- [1..b], a^2 + b^2 == c^2, a+b+c == 24]
+ghci> rightTriangles'
+[(6,8,10)]
+gd::endpre
+
+드디어 답을 얻었습니다! 이것은 함수형 프로그래밍에서 흔한 패턴입니다. 해답을 취할 집합을 만들고, 원하는 답을 얻을 때까지 그 집합에 변형을 가하고 필터링을 하는 것입니다.
+
+And there's our answer! This is a common pattern in functional programming. You take a starting set of solutions and then you apply transformations to those solutions and filter them until you get the right ones.

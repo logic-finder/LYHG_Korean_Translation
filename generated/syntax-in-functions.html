@@ -81,9 +81,9 @@ sayMe x = "Not between 1 and 5"</pre>
             <p>Note that if we moved the last pattern (the catch-all one) to the top, it would always say "Not between 1 and 5", because it would catch all the numbers and they wouldn't have a chance to fall through and be checked for any other patterns.</p>
          </div>
          <div class="plain-text">
-            <p>지난번에 우리가 구현했던 팩토리얼 함수를 기억하십니까? 우리는 어떤 숫자 n의 팩토리얼을 <code>product [1..n]</code>으로서 정의했었습니다. 우리는 팩토리얼 함수를 또한 <i>재귀적</i>으로도 정의할 수 있으며, 이 편이 팩토리얼이 수학에서 보통 정의되는 방식입니다. 우리는 0의 팩토리얼이 1이라고 말함으로써 시작합니다. 그리고나서 우리는 임의의 양의 정수의 팩토리얼은 그 정수에 그 정수의 이전 수의 팩토리얼을 곱한 것이라고 나타냅니다. 하스켈의 용어로 이를 표현해보면 다음과 같습니다:</p>
+            <p>지난번에 우리가 구현했던 팩토리얼 함수를 기억하십니까? 우리는 어떤 숫자 n의 팩토리얼을 <code>product [1..n]</code>으로서 정의했었습니다. 우리는 팩토리얼 함수를 또한 <em>재귀적</em>으로도 정의할 수 있으며, 이 편이 팩토리얼이 수학에서 보통 정의되는 방식입니다. 우리는 0의 팩토리얼이 1이라고 말함으로써 시작합니다. 그리고나서 우리는 임의의 양의 정수의 팩토리얼은 그 정수에 그 정수의 이전 수의 팩토리얼을 곱한 것이라고 나타냅니다. 하스켈의 용어로 이를 표현해보면 다음과 같습니다:</p>
             <div class="partition"></div>
-            <p>Remember the factorial function we implemented previously? We defined the factorial of a number n as product [1..n]. We can also define a factorial function <i>recursively</i>, the way it is usually defined in mathematics. We start by saying that the factorial of 0 is 1. Then we state that the factorial of any positive integer is that integer multiplied by the factorial of its predecessor. Here's how that looks like translated in Haskell terms.</p>
+            <p>Remember the factorial function we implemented previously? We defined the factorial of a number n as product [1..n]. We can also define a factorial function <em>recursively</em>, the way it is usually defined in mathematics. We start by saying that the factorial of 0 is 1. Then we state that the factorial of any positive integer is that integer multiplied by the factorial of its predecessor. Here's how that looks like translated in Haskell terms.</p>
          </div>
          <div class="code-block">
             <pre>
@@ -279,9 +279,9 @@ sum' [] = 0
 sum' (x:xs) = x + sum' xs</pre>
          </div>
          <div class="plain-text">
-            <p>또한 <i>as patterns (역주: 패턴으로서)</i> 라고 불리는 것이 있습니다. 이것들은 뭔가를 어떤 패턴에 따라 해체하고, 해체된 것들을 이름들에 속박하는 한편 여전히 전체에 대한 참조를 유지하는 유용한 방법입니다. 여러분은 이름과 @를 패턴의 앞에 놓음으로써 이것을 합니다. 예를 들자면, 패턴 xs@(x:y:ys)이 있습니다. 이 패턴은 x:y:ys와 정확히 같은 것을 매칭할 것이지만 여러분은 함수 본체 내에서 x:y:ys를 다시 입력하며 똑같은 작업을 반복하는 대신 xs를 통해 전체 리스트를 쉽게 얻을 수 있습니다. 빠르고 더러운 예제를 하나 보자면:</p>
+            <p>또한 <em>as patterns (역주: 패턴으로서)</em> 라고 불리는 것이 있습니다. 이것들은 뭔가를 어떤 패턴에 따라 해체하고, 해체된 것들을 이름들에 속박하는 한편 여전히 전체에 대한 참조를 유지하는 유용한 방법입니다. 여러분은 이름과 @를 패턴의 앞에 놓음으로써 이것을 합니다. 예를 들자면, 패턴 xs@(x:y:ys)이 있습니다. 이 패턴은 x:y:ys와 정확히 같은 것을 매칭할 것이지만 여러분은 함수 본체 내에서 x:y:ys를 다시 입력하며 똑같은 작업을 반복하는 대신 xs를 통해 전체 리스트를 쉽게 얻을 수 있습니다. 빠르고 더러운 예제를 하나 보자면:</p>
             <div class="partition"></div>
-            <p>There's also a thing called <i>as patterns</i>. Those are a handy way of breaking something up according to a pattern and binding it to names whilst still keeping a reference to the whole thing. You do that by putting a name and an @ in front of a pattern. For instance, the pattern xs@(x:y:ys). This pattern will match exactly the same thing as x:y:ys but you can easily get the whole list via xs instead of repeating yourself by typing out x:y:ys in the function body again. Here's a quick and dirty example:</p>
+            <p>There's also a thing called <em>as patterns</em>. Those are a handy way of breaking something up according to a pattern and binding it to names whilst still keeping a reference to the whole thing. You do that by putting a name and an @ in front of a pattern. For instance, the pattern xs@(x:y:ys). This pattern will match exactly the same thing as x:y:ys but you can easily get the whole list via xs instead of repeating yourself by typing out x:y:ys in the function body again. Here's a quick and dirty example:</p>
          </div>
          <div class="code-block">
             <pre>
@@ -337,7 +337,7 @@ bmiTell bmi
             <p>This is very reminiscent of a big if else tree in imperative languages, only this is far better and more readable. While big if else trees are usually frowned upon, sometimes a problem is defined in such a discrete way that you can't get around them. Guards are a very nice alternative for this.</p>
          </div>
          <div class="plain-text">
-            <p>많은 경우, 마지막 가드는 <code>otherwise</code>입니다. <code>otherwise</code>는 단순히 <code>otherwise = True</code>로 정의되며 모든 것을 취합니다. 이는 패턴과 매우 유사합니다만, 패턴은 입력이 어떤 패턴을 만족하는지를 확인할 뿐이지만 가드는 부울 조건을 검사합니다. 만약 어떤 함수의 모든 가드가 <code>False</code>로 평가되면 (그리고 우리가 광범위인 <code>otherwise</code> 가드를 제공하지 않았다면), 평가는 다음 <i>패턴</i>으로 내려갑니다. 이것이 패턴과 가드가 잘 어울리는 방법입니다. 만약 알맞은 가드나 패턴이 발견되지 않는다면, 오류가 발생됩니다.</p>
+            <p>많은 경우, 마지막 가드는 <code>otherwise</code>입니다. <code>otherwise</code>는 단순히 <code>otherwise = True</code>로 정의되며 모든 것을 취합니다. 이는 패턴과 매우 유사합니다만, 패턴은 입력이 어떤 패턴을 만족하는지를 확인할 뿐이지만 가드는 부울 조건을 검사합니다. 만약 어떤 함수의 모든 가드가 <code>False</code>로 평가되면 (그리고 우리가 광범위인 <code>otherwise</code> 가드를 제공하지 않았다면), 평가는 다음 <em>패턴</em>으로 내려갑니다. 이것이 패턴과 가드가 잘 어울리는 방법입니다. 만약 알맞은 가드나 패턴이 발견되지 않는다면, 오류가 발생됩니다.</p>
             <div class="partition"></div>
             <p>Many times, the last guard is otherwise. otherwise is defined simply as otherwise = True and catches everything. This is very similar to patterns, only they check if the input satisfies a pattern but guards check for boolean conditions. If all the guards of a function evaluate to False (and we haven't provided an otherwise catch-all guard), evaluation falls through to the next pattern. That's how patterns and guards play nicely together. If no suitable guards or patterns are found, an error is thrown.</p>
          </div>
@@ -414,7 +414,7 @@ ghci> 3 `myCompare` 2
 GT</pre>
          </div>
          <div class="plain-text">
-            <p><i>노트</i>: 우리는 함수를 백틱과 함께 삽입(infix)으로써 호출할 수 있을 뿐만 아니라, 함수를 백틱을 사용해 정의할 수도 있습니다. 때로는 이 편이 읽기가 더 쉽습니다.</p>
+            <p><em>노트</em>: 우리는 함수를 백틱과 함께 삽입(infix)으로써 호출할 수 있을 뿐만 아니라, 함수를 백틱을 사용해 정의할 수도 있습니다. 때로는 이 편이 읽기가 더 쉽습니다.</p>
             <div class="partition"></div>
             <p>Note: Not only can we call functions as infix with backticks, we can also define them using backticks. Sometimes it's easier to read that way.</p>
          </div>
@@ -476,12 +476,12 @@ bmiTell weight height
             <p>The names we define in the where section of a function are only visible to that function, so we don't have to worry about them polluting the namespace of other functions. Notice that all the names are aligned at a single column. If we don't align them nice and proper, Haskell gets confused because then it doesn't know they're all part of the same block.</p>
          </div>
          <div class="plain-text">
-            <p><i>where</i> 바인딩은 다른 패턴들의 함수 본체에 걸쳐 공유되지 않습니다. 만약 여러분이 한 함수의 여러 패턴들이 어떤 공유된 이름에 접근하기를 원하신다면, 여러분은 그 이름을 전역적으로 정의해야 합니다.</p>
+            <p><em>where</em> 바인딩은 다른 패턴들의 함수 본체에 걸쳐 공유되지 않습니다. 만약 여러분이 한 함수의 여러 패턴들이 어떤 공유된 이름에 접근하기를 원하신다면, 여러분은 그 이름을 전역적으로 정의해야 합니다.</p>
             <div class="partition"></div>
             <p>where bindings aren't shared across function bodies of different patterns. If you want several patterns of one function to access some shared name, you have to define it globally.</p>
          </div>
          <div class="plain-text">
-            <p>여러분은 또한 where 바인딩을 사용해 <i>패턴매칭</i>을 할 수 있습니다! 우리는 이전의 저 함수의 where 부분을 다음으로 재작성할 수도 있었습니다:</p>
+            <p>여러분은 또한 where 바인딩을 사용해 <em>패턴매칭</em>을 할 수 있습니다! 우리는 이전의 저 함수의 where 부분을 다음으로 재작성할 수도 있었습니다:</p>
             <div class="partition"></div>
             <p>You can also use where bindings to pattern match! We could have rewritten the where section of our previous function as:</p>
          </div>
@@ -525,7 +525,7 @@ calcBmis xs = [bmi w h | (w, h) <- xs]
             <p>And that's all there is to it! The reason we had to introduce bmi as a function in this example is because we can't just calculate one BMI from the function's parameters. We have to examine the list passed to the function and there's a different BMI for every pair in there.</p>
          </div>
          <div class="plain-text">
-            <p><i>where</i> 바인딩은 또한 중첩될 수 있습니다. 함수를 만들고 몇 개의 보조 함수를 해당 함수의 <i>where</i>절 내에 정의하고 그 보조함수들에 또 보조함수를 각각 자신의 <i>where</i>절과 함께 만드는 것은 흔한 사용례(idiom)입니다.</p>
+            <p><em>where</em> 바인딩은 또한 중첩될 수 있습니다. 함수를 만들고 몇 개의 보조 함수를 해당 함수의 <em>where</em>절 내에 정의하고 그 보조함수들에 또 보조함수를 각각 자신의 <em>where</em>절과 함께 만드는 것은 흔한 사용례(idiom)입니다.</p>
             <div class="partition"></div>
             <p>where bindings can also be nested. It's a common idiom to make a function and define some helper function in its where clause and then to give those functions helper functions as well, each with its own where clause.</p>
          </div>
@@ -548,12 +548,12 @@ cylinder r h =
     in  sideArea + 2 * topArea</pre>
          </div>
          <div class="plain-text">
-            <p>그 형태는 「표현식」내에 있는 let 「바인딩」입니다. <i>let</i> 부분에서 여러분이 정의한 이름들은 <i>in</i> 부분 이후의 표현식에 접근 가능합니다. 여러분께서 보실 수 있듯, 우리는 let 바인딩을 <i>where</i> 바인딩으로도 정의할 수 있었습니다. 이름들이 또한 하나의 열에 정렬되어 있음에 주목하십시오. 그래서 이 둘 사이의 차이점이 무엇인가? 지금으로선 단지 <i>let</i>이 속박을 먼저 하고 표현식이 그 속박된 이름을 나중에 사용하는 반면 <i>where</i>은 반대로 하는 것으로 관찰됩니다.</p>
+            <p>그 형태는 「표현식」내에 있는 let 「바인딩」입니다. <em>let</em> 부분에서 여러분이 정의한 이름들은 <em>in</em> 부분 이후의 표현식에 접근 가능합니다. 여러분께서 보실 수 있듯, 우리는 let 바인딩을 <em>where</em> 바인딩으로도 정의할 수 있었습니다. 이름들이 또한 하나의 열에 정렬되어 있음에 주목하십시오. 그래서 이 둘 사이의 차이점이 무엇인가? 지금으로선 단지 <em>let</em>이 속박을 먼저 하고 표현식이 그 속박된 이름을 나중에 사용하는 반면 <em>where</em>은 반대로 하는 것으로 관찰됩니다.</p>
             <div class="partition"></div>
             <p>The form is let <bindings> in <expression>. The names that you define in the let part are accessible to the expression after the in part. As you can see, we could have also defined this with a where binding. Notice that the names are also aligned in a single column. So what's the difference between the two? For now it just seems that let puts the bindings first and the expression that uses them later whereas where is the other way around.</p>
          </div>
          <div class="plain-text">
-            <p>차이점은 바로 <i>let</i> 바인딩은 그 자체로 표현식이라는 점입니다. <i>where</i> 바인딩은 단지 문법적 구성체입니다. 우리가 if문을 사용해보고 if else문은 표현식이며 여러분은 if문을 거의 어느 곳에서든 한 줄에 구겨 넣을 수 있다고 설명됐던 때를 기억하십니까?</p>
+            <p>차이점은 바로 <em>let</em> 바인딩은 그 자체로 표현식이라는 점입니다. <em>where</em> 바인딩은 단지 문법적 구성체입니다. 우리가 if문을 사용해보고 if else문은 표현식이며 여러분은 if문을 거의 어느 곳에서든 한 줄에 구겨 넣을 수 있다고 설명됐던 때를 기억하십니까?</p>
             <div class="partition"></div>
             <p>The difference is that let bindings are expressions themselves. where bindings are just syntactic constructs. Remember when we did the if statement and it was explained that an if else statement is an expression and you can cram it in almost anywhere?</p>
          </div>
@@ -595,7 +595,7 @@ ghci> (let a = 100; b = 200; c = 300 in a*b*c, let foo="Hey "; bar = "there!" in
 (6000000,"Hey there!")</pre>
          </div>
          <div class="plain-text">
-            <p>여러분은 마지막 바인딩 뒤에 세미콜론을 꼭 붙일 필요는 없지만 하고 싶으시다면 할 수는 있습니다. 우리가 전에 말한 것처럼, 여러분은 <i>let</i> 바인딩으로 패턴매칭할 수 있습니다. let 바인딩은 튜플을 성분들로 빠르게 분해하고 이름 등등에 해당 성분들을 속박하는데 매우 유용합니다.</p>
+            <p>여러분은 마지막 바인딩 뒤에 세미콜론을 꼭 붙일 필요는 없지만 하고 싶으시다면 할 수는 있습니다. 우리가 전에 말한 것처럼, 여러분은 <em>let</em> 바인딩으로 패턴매칭할 수 있습니다. let 바인딩은 튜플을 성분들로 빠르게 분해하고 이름 등등에 해당 성분들을 속박하는데 매우 유용합니다.</p>
             <div class="partition"></div>
             <p>You don't have to put a semicolon after the last binding but you can if you want. Like we said before, you can pattern match with let bindings. They're very useful for quickly dismantling a tuple into components and binding them to names and such.</p>
          </div>
@@ -605,7 +605,7 @@ ghci> (let (a,b,c) = (1,2,3) in a+b+c) * 100
 600</pre>
          </div>
          <div class="plain-text">
-            <p>여러분은 또한 <i>let</i> 바인딩을 list comprehension 내부에 놓을 수 있습니다. <i>where</i>으로 보조함수를 정의하는 대신 <i>let</i>을 list comprehension 내부에서 사용하기 위해 몸무게-신장 쌍의 리스트를 계산하는 이전 예제를 재작성해 봅시다.</p>
+            <p>여러분은 또한 <em>let</em> 바인딩을 list comprehension 내부에 놓을 수 있습니다. <em>where</em>으로 보조함수를 정의하는 대신 <em>let</em>을 list comprehension 내부에서 사용하기 위해 몸무게-신장 쌍의 리스트를 계산하는 이전 예제를 재작성해 봅시다.</p>
             <div class="partition"></div>
             <p>You can also put let bindings inside list comprehensions. Let's rewrite our previous example of calculating lists of weight-height pairs to use a let inside a list comprehension instead of defining an auxiliary function with a where.</p>
          </div>
@@ -615,7 +615,7 @@ calcBmis :: (RealFloat a) => [(a, a)] -> [a]
 calcBmis xs = [bmi | (w, h) <- xs, let bmi = w / h ^ 2]</pre>
          </div>
          <div class="plain-text">
-            <p>우리는 우리가 술어를 포함시키는 것과 매우 유사하게 <i>let</i>을 list comprehension 내부에 포함시키지만, 다만 let 바인딩은 리스트를 필터링하지 않고, 오직 이름들에 속박할 뿐입니다. list comprehension 내부에서 <i>let</i>에서 정의된 이름들은 출력함수 (| 이전의 부분) 와 이 let 바인딩의 이후에 오는 모든 술어와 부분들에 보입니다. 그래서 우리는 이 함수가 오직 뚱뚱한 사람의 BMI만을 반환하게 만들 수도 있습니다.</p>
+            <p>우리는 우리가 술어를 포함시키는 것과 매우 유사하게 <em>let</em>을 list comprehension 내부에 포함시키지만, 다만 let 바인딩은 리스트를 필터링하지 않고, 오직 이름들에 속박할 뿐입니다. list comprehension 내부에서 <em>let</em>에서 정의된 이름들은 출력함수 (| 이전의 부분) 와 이 let 바인딩의 이후에 오는 모든 술어와 부분들에 보입니다. 그래서 우리는 이 함수가 오직 뚱뚱한 사람의 BMI만을 반환하게 만들 수도 있습니다.</p>
             <div class="partition"></div>
             <p>We include a let inside a list comprehension much like we would a predicate, only it doesn't filter the list, it only binds to names. The names defined in a let inside a list comprehension are visible to the output function (the part before the |) and all predicates and sections that come after of the binding. So we could make our function return only the BMIs of fat people:</p>
          </div>
@@ -630,7 +630,7 @@ calcBmis xs = [bmi | (w, h) <- xs, let bmi = w / h ^ 2, bmi >= 25.0]</pre>
             <p>We can't use the bmi name in the (w, h) <- xs part because it's defined prior to the let binding.</p>
          </div>
          <div class="plain-text">
-            <p>우리는 <i>let</i> 바인딩의 <i>in</i> 부분을 우리가 let 바인딩을 list comprehension에서 사용했을 때 생략했는데 그 이유는 이름들의 가시성이 이미 list comprehension에서 미리 정의되었기 때문입니다. 그러나, 우리는 <i>let in</i> 바인딩을 술어에서 사용할 수도 있고 그 정의된 이름들은 오직 그 술어에만 보일 것입니다. <i>in</i> 부분은 또한 함수와 상수를 GHCi에서 직접적으로 정의할 때 생략될 수 있습니다. 만약 우리가 그렇게 한다면, 그 이름들은 전체 상호작용 세션 내내 보일 것입니다.</p>
+            <p>우리는 <em>let</em> 바인딩의 <em>in</em> 부분을 우리가 let 바인딩을 list comprehension에서 사용했을 때 생략했는데 그 이유는 이름들의 가시성이 이미 list comprehension에서 미리 정의되었기 때문입니다. 그러나, 우리는 <em>let in</em> 바인딩을 술어에서 사용할 수도 있고 그 정의된 이름들은 오직 그 술어에만 보일 것입니다. <em>in</em> 부분은 또한 함수와 상수를 GHCi에서 직접적으로 정의할 때 생략될 수 있습니다. 만약 우리가 그렇게 한다면, 그 이름들은 전체 상호작용 세션 내내 보일 것입니다.</p>
             <div class="partition"></div>
             <p>We omitted the in part of the let binding when we used them in list comprehensions because the visibility of the names is already predefined there. However, we could use a let in binding in a predicate and the names defined would only be visible to that predicate. The in part can also be omitted when defining functions and constants directly in GHCi. If we do that, then the names will be visible throughout the entire interactive session.</p>
          </div>
@@ -645,7 +645,7 @@ ghci> boot
 <interactive>:1:0: Not in scope: `boot'</pre>
          </div>
          <div class="plain-text">
-            <p>만약 <i>let</i> 바인딩이 그렇게 멋있다면, 왜 let 바인딩을 <i>where</i> 바인딩 대신 항상 사용하지 않습니까? 여러분께선 궁금하실지도 모릅니다. 물론, <i>let</i> 바인딩은 표현식이고 스코프의 측면에서 아주 지역적이므로, 가드들에 걸쳐 사용될 수 없습니다. 몇몇 사람들은 <i>where</i> 바인딩을 선호하는데 그 이유는 이름들이 자신들이 사용되고 있는 함수 이후에 오기 때문입니다. 그러한 방법으로, 함수 본체는 함수명과 타입 선언에 더 가깝고 더욱 가독성있는 것들에 가깝습니다.</p>
+            <p>만약 <em>let</em> 바인딩이 그렇게 멋있다면, 왜 let 바인딩을 <em>where</em> 바인딩 대신 항상 사용하지 않습니까? 여러분께선 궁금하실지도 모릅니다. 물론, <em>let</em> 바인딩은 표현식이고 스코프의 측면에서 아주 지역적이므로, 가드들에 걸쳐 사용될 수 없습니다. 몇몇 사람들은 <em>where</em> 바인딩을 선호하는데 그 이유는 이름들이 자신들이 사용되고 있는 함수 이후에 오기 때문입니다. 그러한 방법으로, 함수 본체는 함수명과 타입 선언에 더 가깝고 더욱 가독성있는 것들에 가깝습니다.</p>
             <div class="partition"></div>
             <p>If let bindings are so cool, why not use them all the time instead of where bindings, you ask? Well, since let bindings are expressions and are fairly local in their scope, they can't be used across guards. Some people prefer where bindings because the names come after the function they're being used in. That way, the function body is closer to its name and type declaration and to some that's more readable.</p>
          </div>
@@ -660,7 +660,7 @@ ghci> boot
             <p>Many imperative languages (C, C++, Java, etc.) have case syntax and if you've ever programmed in them, you probably know what it's about. It's about taking a variable and then executing blocks of code for specific values of that variable and then maybe including a catch-all block of code in case the variable has some value for which we didn't set up a case.</p>
          </div>
          <div class="plain-text">
-            <p>하스켈은 그러한 개념을 취하고 그러한 개념에 한 발 더 나아갑니다. 이 이름이 암시하듯이, case 표현식이란, 물론, 표현식이며, if else 표현식과 <i>let</i> 바인딩과 아주 비슷합니다. 우리가 한 변수의 값의 가능한 경우들에 기반해 표현식을 평가할 수 있을 뿐만 아니라, 우리는 또한 패턴매칭을 할 수 있습니다. 음... 변수를 취하고, 그 변수를 패턴매칭하고, 변수의 값에 기반해 코드의 조각을 평가하고... 어디서 우리가 이걸 전에 들어봤을까요? 아! 함수 정의에서의 매개변수들에 대한 패턴 매칭! 물론, 이것은 실제로는 단순히 case 표현식에 대한 문법적 설탕입니다. 아래의 두 코드의 조각은 같은 일을 하며 상호교환적입니다:</p>
+            <p>하스켈은 그러한 개념을 취하고 그러한 개념에 한 발 더 나아갑니다. 이 이름이 암시하듯이, case 표현식이란, 물론, 표현식이며, if else 표현식과 <em>let</em> 바인딩과 아주 비슷합니다. 우리가 한 변수의 값의 가능한 경우들에 기반해 표현식을 평가할 수 있을 뿐만 아니라, 우리는 또한 패턴매칭을 할 수 있습니다. 음... 변수를 취하고, 그 변수를 패턴매칭하고, 변수의 값에 기반해 코드의 조각을 평가하고... 어디서 우리가 이걸 전에 들어봤을까요? 아! 함수 정의에서의 매개변수들에 대한 패턴 매칭! 물론, 이것은 실제로는 단순히 case 표현식에 대한 문법적 설탕입니다. 아래의 두 코드의 조각은 같은 일을 하며 상호교환적입니다:</p>
             <div class="partition"></div>
             <p>Haskell takes that concept and one-ups it. Like the name implies, case expressions are, well, expressions, much like if else expressions and let bindings. Not only can we evaluate expressions based on the possible cases of the value of a variable, we can also do pattern matching. Hmmm, taking a variable, pattern matching it, evaluating pieces of code based on its value, where have we heard this before? Oh yeah, pattern matching on parameters in function definitions! Well, that's actually just syntactic sugar for case expressions. These two pieces of code do the same thing and are interchangeable:</p>
          </div>
@@ -720,6 +720,6 @@ describeList xs = "The list is " ++ what xs
    </body>
    <script src="../src/navigator.js"></script>
    <script>
-      tailorDocument("syntax-in-functions");
+      tailorDocument("syntax-in-functions.html");
    </script>
 </html>
