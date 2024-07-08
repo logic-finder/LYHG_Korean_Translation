@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="ko-KR">
+   <head>
+      <meta charset="utf-8" />
+      <meta name="viewport" content="width=device-width" />
+      <link href="../src/style.css" rel="stylesheet" />
+      <title></title>
+   </head>
+   <body>
+      <div id="navigator">
+         <div id="book-info">
+            <p id="book-title">
+               <span id="n1">Learn You a</span> <span id="n2">Haskell</span> <span id="n3">for Great Good!</span>
+            </p>
+            <p id="book-subtitle">A Beginner's Guide</p>
+            <p id="author">Miran Lipovača&emsp;原著</p>
+            <p id="translator"><a href="https://github.com/logic-finder" target="_blank">logicseeker</a>&emsp;&emsp;譯</p>
+         </div>
+         <hr>
+         <h2>목 차</h2>
+         <hr>
+         <ul id="nav-misc"></ul>
+         <hr>
+         <ol id="nav-intro"></ol>
+         <div id="nav-main"></div>
+         <p id="memo">
+            <b>메모</b>:&emsp;개인적인 공부용으로 번역하였습니다.
+            <br>영어 실력 및 각종 이해력 등의 이슈로 번역이 부정확할 수 있으리라 생각합니다.
+            <br>이에 편의를 위해 원문을 옆에 비치하였사오니 해석이 좀 이?상하다 싶으시면 참고하시기 바랍니다. 감사합니다.
+         </p>
+         <img src="../src/Patchouli_Holding_Learn_You_a_Haskell.jpg" title="UwU" alt="a cute character holding the book Learn You a Haskell for Great Good!">
+         <p id="img-source">Source: https://github.com/cat-milk/Anime-Girls-Holding-Programming-Books/blob/master/Haskell/Patchouli_Holding_Learn_You_a_Haskell.jpg</p>      </div>
+      <article>
+         <div class="plain-text">
+            <h1>타입과 타입클래스</h1>
+            <div class="partition"></div>
+            <h1>Types and Typeclasses</h1>
+         </div>
+         <div class="plain-text">
+            <h2>타입이란?</h2>
+            <div class="partition"></div>
+            <h2>Believe the type</h2>
+         </div>
+         <div class="plain-text">
+            <p>지난 장에서, 우리는 하스켈이 정적[static] 타입 체계를 가지고 있다고 언급하였습니다. 모든 표현식의 타입은 컴파일 타임에 알 수 있으며, 이는 안전한 코드로 이어집니다. 만약 여러분이 부울 타입을 어떤 숫자로 나누려고 하는 프로그램을 작성한다면, 컴파일조차 되지 않을 것입니다. 이것은 좋은 일입니다. 왜냐하면 프로그램이 실행 중에 오류가 나는[crash] 것보다는 컴파일 타임에 그러한 오류를 잡는 것이 더 낫기 때문입니다. 하스켈 내의 모든 것은 타입을 가지고 있으므로, 컴파일러는 프로그램을 컴파일하기 전에 그 프로그램에 대해 꽤 많은 것을 추론할 수 있습니다.</p>
+            <div class="partition"></div>
+            <p>Previously we mentioned that Haskell has a static type system. The type of every expression is known at compile time, which leads to safer code. If you write a program where you try to divide a boolean type with some number, it won't even compile. That's good because it's better to catch such errors at compile time instead of having your program crash. Everything in Haskell has a type, so the compiler can reason quite a lot about your program before compiling it.</p>
+         </div>
+         <div class="plain-text">
+            <p>자바나 파스칼과는 다르게, 하스켈은 타입 추론을 합니다. 만약 우리가 숫자를 하나 작성하면, 우리는 하스켈에게 이것이 숫자임을 꼭 알려줄 필요가 없습니다. 하스켈은 그게 숫자라는 것을 스스로 <em>추론</em>할 수 있으므로, 우리는 프로그램을 완전하게 작성하기 위해 함수와 표현식의 타입들을 명시적으로 적어놓을 필요가 없습니다. 우리는 지금까지 하스켈의 기본적인 사항들 일부를 다루었지만 타입에 관해서는 아직 피상적인 수준에 머무르고 있습니다. 그러나, 이 타입 체계를 이해하는 것은 하스켈 학습에 있어서 상당히 중요합니다.</p>
+            <div class="partition"></div>
+            <p>Unlike Java or Pascal, Haskell has type inference. If we write a number, we don't have to tell Haskell it's a number. It can infer that on its own, so we don't have to explicitly write out the types of our functions and expressions to get things done. We covered some of the basics of Haskell with only a very superficial glance at types. However, understanding the type system is a very important part of learning Haskell.</p>
+         </div>
+         <div class="plain-text">
+            <p>타입이라고 하는 것은, 모든 표현식이 가지는 일종의 「꼬리표」 입니다. 타입은 어떤 표현식이 무슨 「대상들의 범주」에 속하는지를 이야기해 줍니다. 예를 들어, True 라는 표현식은 부울[boolean]이며, "hello"라는 표현식은 문자열이라는 식입니다.</p>
+            <div class="partition"></div>
+            <p>A type is a kind of label that every expression has. It tells us in which category of things that expression fits. The expression True is a boolean, "hello" is a string, etc.</p>
+         </div>
+         <div class="plain-text">
+            <p>이제 우리는 GHCI를 사용해 표현식 몇 개의 타입을 살펴보겠습니다. 표현식의 타입을 확인하려면 <code>:t</code> 명령어 뒤에 임의의 유효한 표현식을 작성하면 됩니다. 한 번 시도해 봅시다.</p>
+            <div class="partition"></div>
+            <p>Now we'll use GHCI to examine the types of some expressions. We'll do that by using the :t command which, followed by any valid expression, tells us its type. Let's give it a whirl.</p>
+         </div>
+         <div class="code-block">
+            <pre>
+ghci> :t 'a'
+'a' :: Char
+ghci> :t True
+True :: Bool
+ghci> :t "HELLO!"
+"HELLO!" :: [Char]
+ghci> :t (True, 'a')
+(True, 'a') :: (Bool, Char)
+ghci> :t 4 == 5
+4 == 5 :: Bool</pre>
+         </div>
+         <div class="plain-text">
+            <p>이를 통해 우리는 하나의 표현식에 대해 :t를 수행하면 해당 표현식 뒤로 ::와 그 타입이 출력된다는 것을 알았습니다. ::는 「~는 ~의 타입을 가지고 있다」고 읽습니다. 명시적인 타입은 항상 첫 글자가 대문자로 표시됩니다. 'a'는, 보이는 대로, Char의 타입을 가지고 있습니다. 이 타입이 <em>문자[character]</em>를 나타낸다는 것을 결론짓기는 어려운 일이 아닙니다. True는 Bool 타입입니다. 확실히 그렇습니다. 근데 이것은 무엇일까요? "HELLO!"의 타입을 검사해보니 [Char]이 나왔습니다. 이 대괄호는 리스트를 의미합니다. 따라서 우리는 이 타입을 <em>문자의 리스트</em>라고 읽습니다. 리스트와는 다르게, 각각의 튜플 길이는 그 자체의 타입을 갖습니다. 따라서 표현식 (True, 'a')는 (Bool, Char)의 타입을 갖는 반면, ('a','b','c')와 같은 표현식은 (Char, Char, Char)의 타입을 가질 것입니다. 4 == 5는 언제나 False를 반환합니다. 그러므로 이 표현식의 타입은 Bool입니다.</p>
+            <div class="partition"></div>
+            <p>Here we see that doing :t on an expression prints out the expression followed by :: and its type. :: is read as "has type of". Explicit types are always denoted with the first letter in capital case. 'a', as it would seem, has a type of Char. It's not hard to conclude that it stands for character. True is of a Bool type. That makes sense. But what's this? Examining the type of "HELLO!" yields a [Char]. The square brackets denote a list. So we read that as it being a list of characters. Unlike lists, each tuple length has its own type. So the expression of (True, 'a') has a type of (Bool, Char), whereas an expression such as ('a','b','c') would have the type of (Char, Char, Char). 4 == 5 will always return False, so its type is Bool.</p>
+         </div>
+         <div class="plain-text">
+            <p>함수 역시 타입을 가집니다. 함수를 작성할 때, 우리는 그 함수에 명시적인 타입 선언을 줄 것인지를 선택할 수 있습니다. 타입을 명시적으로 선언하는 것은 아주 짧은 함수를 작성할 때를 제외하면 일반적으로 좋은 습관으로 간주됩니다. 지금 여기서부터, 우리는 작성하는 모든 함수에 타입 선언을 나타낼 것입니다. 이전 장에서 작성했던, 문자열을 필터링해 오직 대문자만 남기는 리스트 구성을 기억하십니까? 여기에 타입 선언을 붙이면 다음과 같이 됩니다.</p>
+            <div class="partition"></div>
+            <p>Functions also have types. When writing our own functions, we can choose to give them an explicit type declaration. This is generally considered to be good practice except when writing very short functions. From here on, we'll give all the functions that we make type declarations. Remember the list comprehension we made previously that filters a string so that only caps remain? Here's how it looks like with a type declaration.</p>
+         </div>
+         <div class="code-block">
+            <pre>
+removeNonUppercase :: [Char] -> [Char]
+removeNonUppercase st = [ c | c <- st, c `elem` ['A'..'Z']]</pre>
+         </div>
+         <div class="plain-text">
+            <p>removeNonUppercase는 [Char] -> [Char]의 타입을 가지며, 이는 이 함수가 문자열과 문자열을 대응시킨다[map]는 것을 의미합니다. 왜냐하면 이 함수는 문자열 하나를 매개변수로 취해서 다른 문자열을 결과로 반환하기 때문입니다. [Char] 타입은 String과 동의어이므로, 만약 우리가 removeNonUppercase :: String -> String으로 작성한다면 더욱 명확합니다. 우리는 이 함수에 타입 선언을 굳이 하지 않아도 됐습니다. 왜냐하면 컴파일러가 스스로 이것이 문자열로부터 문자열로의 함수라는 것을 스스로 추론할 수 있기 때문입니다. 하지만 어쨌든간에 우리는 타입 선언을 했습니다. 한편, 다수의 매개변수를 취하는 함수의 타입은 어떻게 작성할까요? 다음은 3개의 정수를 취해 합하는 단순한 함수입니다.</p>
+            <div class="partition"></div>
+            <p>removeNonUppercase has a type of [Char] -> [Char], meaning that it maps from a string to a string. That's because it takes one string as a parameter and returns another as a result. The [Char] type is synonymous with String so it's clearer if we write removeNonUppercase :: String -> String. We didn't have to give this function a type declaration because the compiler can infer by itself that it's a function from a string to a string but we did anyway. But how do we write out the type of a function that takes several parameters? Here's a simple function that takes three integers and adds them together:</p>
+         </div>
+         <div class="code-block">
+            <pre>
+addThree :: Int -> Int -> Int -> Int
+addThree x y z = x + y + z</pre>
+         </div>
+         <div class="plain-text">
+            <p>매개변수들은 ->로 분리되며 매개변수와 반환 타입 사이에 특별한 구분은 없습니다. 반환 타입은 선언에서의 마지막 항목이며 매개변수는 앞의 3개입니다. 이후에, 우리는 왜 매개변수와 반환 타입을 마치 Int, Int, Int -> Int처럼 좀 더 명시적으로 구분하지 않고, ->로만 구분되는지 알게 될 것입니다.</p>
+            <div class="partition"></div>
+            <p>The parameters are separated with -> and there's no special distinction between the parameters and the return type. The return type is the last item in the declaration and the parameters are the first three. Later on we'll see why they're all just separated with -> instead of having some more explicit distinction between the return types and the parameters like Int, Int, Int -> Int or something.</p>
+         </div>
+         <div class="plain-text">
+            <p>만약 여러분이 함수에 타입 선언을 붙이고 싶지만, 타입이 무엇이 되어야 하는지 확신하지 못하겠다면, 여러분은 언제나 함수를 타입 선언 없이 작성한 뒤 :t를 통해 확인할 수 있습니다. 함수 역시 표현식이므로, :t는 함수에도 문제없이 적용됩니다.</p>
+            <div class="partition"></div>
+            <p>If you want to give your function a type declaration but are unsure as to what it should be, you can always just write the function without it and then check it with :t. Functions are expressions too, so :t works on them without a problem.</p>
+         </div>
+         <div class="plain-text">
+            <p>다음은 흔한 타입 몇 개의 개요입니다.</p>
+            <div class="partition"></div>
+            <p>Here's an overview of some common types.</p>
+         </div>
+         <div class="plain-text">
+            <p><code>Int</code>는 정수[integer]를 뜻합니다. 이것은 whole number에 대해 사용됩니다. 7은 Int일 수 있지만 7.2는 그럴 수 없습니다. Int는 유계[bounded]입니다. 즉 Int에는 최솟값과 최댓값이 있다는 것입니다. 보통 32비트 기계에서 최대로 가능한 Int는 2,147,483,647이고 최소로 가능한 Int는 -2,147,483,648입니다.</p>
+            <div class="partition"></div>
+            <p>Int stands for integer. It's used for whole numbers. 7 can be an Int but 7.2 cannot. Int is bounded, which means that it has a minimum and a maximum value. Usually on 32-bit machines the maximum possible Int is 2147483647 and the minimum is -2147483648.</p>
+         </div>
+         <div class="plain-text">
+            <p><code>Integer</code>는, 얾... 이것도 정수를 나타냅니다(⋯). 주요한 차이는, Integer는 유계가 아니어서 큰 숫자를 표현하는 데 사용될 수 있다는 것입니다. 굉장히 큰 숫자를 말입니다. 그러나, Int는 더욱 효율적입니다.</p>
+            <div class="partition"></div>
+            <p>Integer stands for, er … also integer. The main difference is that it's not bounded so it can be used to represent really really big numbers. I mean like really big. Int, however, is more efficient.</p>
+         </div>
+         <div class="code-block">
+            <pre>
+factorial :: Integer -> Integer
+factorial n = product [1..n]
+
+ghci> factorial 50
+30414093201713378043612608166064768844377641568960512000000000000</pre>
+         </div>
+         <div class="plain-text">
+            <p><code>Float</code>은 단정밀도[single precision]를 가진 실수 부동소수점 수입니다.</p>
+            <div class="partition"></div>
+            <p>Float is a real floating point with single precision.</p>
+         </div>
+         <div class="code-block">
+            <pre>
+circumference :: Float -> Float
+circumference r = 2 * pi * r
+
+ghci> circumference 4.0
+25.132742</pre>
+         </div>
+         <div class="plain-text">
+            <p><code>Double</code>는 배정밀도[double precision]를 가진 실수 부동소수점 수입니다.</p>
+            <div class="partition"></div>
+            <p>Double is a real floating point with double the precision!</p>
+         </div>
+         <div class="code-block">
+            <pre>
+circumference' :: Double -> Double
+circumference' r = 2 * pi * r
+
+ghci> circumference' 4.0
+25.132741228718345</pre>
+         </div>
+         <div class="plain-text">
+            <p><code>Bool</code>은 부울 타입입니다. 이 타입은 오직 True와 False 두 가지 값만 가질 수 있습니다.</p>
+            <div class="partition"></div>
+            <p>Bool is a boolean type. It can have only two values: True and False.</p>
+         </div>
+         <div class="plain-text">
+            <p><code>Char</code>은 문자 하나를 의미합니다. 이 타입은 따옴표로 표기됩니다. 문자의 리스트가 문자열입니다.</p>
+            <div class="partition"></div>
+            <p>Char represents a character. It's denoted by single quotes. A list of characters is a string.</p>
+         </div>
+         <div class="plain-text">
+            <p>튜플은 타입이지만, 튜플의 타입은 튜플의 길이 뿐만이 아니라 튜플을 이루는 요소들의 타입에 좌우됩니다. 따라서, 이론적으로는 무한한 수의 튜플 타입이 존재하므로, 이 강의에서 다루기에는 너무 많습니다. 한편, 빈 튜플 () 역시 타입이며 이 타입은 단 하나의 값, 즉 () 만을 가질 수 있다는 점에 주목하십시오.</p>
+            <div class="partition"></div>
+            <p>Tuples are types but they are dependent on their length as well as the types of their components, so there is theoretically an infinite number of tuple types, which is too many to cover in this tutorial. Note that the empty tuple () is also a type which can only have a single value: ()</p>
+         </div>
+         <div class="plain-text">
+            <h2>타입 변수</h2>
+            <div class="partition"></div>
+            <h2>Type variables</h2>
+         </div>
+         <div class="plain-text">
+            <p>head 함수의 타입은 무엇이라고 생각하십니까? head는 임의의 타입의 리스트를 취해 그 첫번째 요소를 반환하므로, 그 타입이 뭐가 될 수 있겠습니까? 확인해 봅시다!</p>
+            <div class="partition"></div>
+            <p>What do you think is the type of the head function? Because head takes a list of any type and returns the first element, so what could it be? Let's check!</p>
+         </div>
+         <div class="code-block">
+            <pre>
+ghci> :t head
+head :: [a] -> a</pre>
+         </div>
+         <div class="plain-text">
+            <p>흠! a가 무엇일까요? 타입인 것일까요? 지난 절에서 우리는 타입은 대문자로 작성된다는 것을 알았습니다. 따라서 이것은 확실히 타입일 수는 없겠군요. 이것이 대문자로 작성되지 않았기 때문에, 이것은 실제로는 <em>타입 변수</em>입니다. 즉, a는 임의의 타입일 수 있음을 의미합니다. 이것은 마치 타 언어에서의 generic과 같은 것입니다. 그러나, 하스켈에서 이 타입 변수는 생각되는 것보다 더욱 강력한데, 왜냐하면 만약 작성하는 함수가, 그 함수 내에서 사용되고 있는 타입의 특정한 성질을 활용하지 않는다면, 타입 변수를 사용해서 그 함수를 아주 일반적인 함수로 만들 수 있기 때문입니다. 타입 변수를 지니는 함수를 <em>다형[polymorphic] 함수</em>라고 합니다. head 함수의 저 타입 선언은, 이 함수가 임의의 타입의 리스트 하나를 취해 그 타입의 원소 하나를 반환한다는 것을 명시하고 있습니다.</p>
+            <div class="partition"></div>
+            <p>Hmmm! What is this a? Is it a type? Remember that we previously stated that types are written in capital case, so it can't exactly be a type. Because it's not in capital case it's actually a type variable. That means that a can be of any type. This is much like generics in other languages, only in Haskell it's much more powerful because it allows us to easily write very general functions if they don't use any specific behavior of the types in them. Functions that have type variables are called polymorphic functions. The type declaration of head states that it takes a list of any type and returns one element of that type.</p>
+         </div>
+         <div class="plain-text">
+            <p>비록 타입 변수는 문자 하나보다 더 긴 이름을 가질 수 있긴 하지만, 우리는 보통 a, b, c, d와 같은 이름을 붙입니다.</p>
+            <div class="partition"></div>
+            <p>Although type variables can have names longer than one character, we usually give them names of a, b, c, d …</p>
+         </div>
+         <div class="plain-text">
+            <p>fst 함수를 기억하십니까? fst는 쌍의 첫번째 요소를 반환합니다. 이 함수의 타입을 검사해 봅시다.</p>
+            <div class="partition"></div>
+            <p>Remember fst? It returns the first component of a pair. Let's examine its type.</p>
+         </div>
+         <div class="code-block">
+            <pre>
+ghci> :t fst
+fst :: (a, b) -> a</pre>
+         </div>
+         <div class="plain-text">
+            <p>이를 통해, 우리는 fst가 두 개의 타입으로 이루어진 튜플 하나를 취해서 이 쌍의 첫번째 요소와 같은 타입을 가진 원소 하나를 반환한다는 것을 알았습니다. 이것이 바로 우리가 fst를 임의의 두 타입을 가진 쌍에 대해 사용할 수 있는 이유입니다. 한편, a와 b가 다른 타입 변수라고 해서, 이 둘이 반드시 다른 타입일 필요는 없습니다. 다만 첫번째 요소의 타입과 반환값의 타입이 같다는 것을 명시하고 있을 뿐입니다.</p>
+            <div class="partition"></div>
+            <p>We see that fst takes a tuple which contains two types and returns an element which is of the same type as the pair's first component. That's why we can use fst on a pair that contains any two types. Note that just because a and b are different type variables, they don't have to be different types. It just states that the first component's type and the return value's type are the same.</p>
+         </div>
+         <div class="plain-text">
+            <h2>타입클래스란?</h2>
+            <div class="partition"></div>
+            <h2>Typeclasses 101</h2>
+         </div>
+         <div class="plain-text">
+            <p>타입클래스란, 어떤 성질[behavior]을 정의하는 일종의 인터페이스입니다. 어떤 타입이 어떤 타입클래스의 부분이라는 것은, 그 타입이 그 타입클래스가 기술하는 성질을 지원/구현한다는 것을 의미합니다. 객체 지향 프로그래밍에 익숙한 사람들은 타입클래스를 혼란스러워하는데, 왜냐하면 타입클래스를 객체 지향 언어에서의 클래스같은 것이라고 생각하기 때문입니다. 하지만, 이것은 사실이 아닙니다. 타입클래스가 더 낫다는 점을 제외하면, 타입클래스를 일종의 자바의 인터페이스로서 생각할 수 있습니다.</p>
+            <div class="partition"></div>
+            <p>A typeclass is a sort of interface that defines some behavior. If a type is a part of a typeclass, that means that it supports and implements the behavior the typeclass describes. A lot of people coming from OOP get confused by typeclasses because they think they are like classes in object oriented languages. Well, they're not. You can think of them kind of as Java interfaces, only better.</p>
+         </div>
+         <div class="plain-text">
+            <p><code>==</code>함수의 타입 표현[type signature]은 무엇일까요?</p>
+            <div class="partition"></div>
+            <p>What's the type signature of the == function?</p>
+         </div>
+         <div class="code-block">
+            <pre>
+ghci> :t (==)
+(==) :: (Eq a) => a -> a -> Bool</pre>
+         </div>
+         <div class="plain-text">
+            <p><em>노트</em>: 동등연산자인 ==은 함수입니다. +, *, -, / 및 모든 연산자 역시 함수입니다. 만약 함수가 오직 특수문자로만 구성되어 있다면, 기본적으로 infix 함수로 간주됩니다. 만약 이 함수의 타입을 검사하고 싶다든가, 다른 함수에 전달하고 싶다든가, 혹은 prefix 함수로서 호출하고 싶다든가 하면, 우리는 이 함수를 괄호로 둘러싸야만 합니다.</p>
+            <div class="partition"></div>
+            <p>Note: the equality operator, == is a function. So are +, *, -, / and pretty much all operators. If a function is comprised only of special characters, it's considered an infix function by default. If we want to examine its type, pass it to another function or call it as a prefix function, we have to surround it in parentheses.</p>
+         </div>
+         <div class="plain-text">
+            <p>흥미롭군요. 우리는 여기서 새로운 기호인 =>를 보았습니다. => 기호 전에 있는 모든 것은 <em>클래스 제약[class constraint]</em>이라고 합니다. 우리는 저 타입 선언을 이렇게 읽을 수 있습니다. 「동등성 함수는 같은 타입인 임의의 두 값을 취하고 Bool을 반환한다.」 이 두 값의 타입은 반드시 Eq 클래스의 멤버여야만 합니다 (이것은 클래스 제약이었습니다).</p>
+            <div class="partition"></div>
+            <p>Interesting. We see a new thing here, the => symbol. Everything before the => symbol is called a class constraint. We can read the previous type declaration like this: the equality function takes any two values that are of the same type and returns a Bool. The type of those two values must be a member of the Eq class (this was the class constraint).</p>
+         </div>
+         <div class="plain-text">
+            <p>Eq 타입클래스는 동등성을 검사하기 위한 인터페이스를 제공합니다. 임의의 타입에 대해서, 이 타입을 가지는 두 값이 있다고 했을 때, 이 두 값 사이에서 동등성을 검사하는 것이 타당하다면, 이 타입은 Eq 클래스의 멤버여야 합니다. IO 타입(입출력을 다루는 타입)과 함수를 제외한 모든 표준 하스켈 타입은 Eq 타입클래스의 일부입니다.</p>
+            <div class="partition"></div>
+            <p>The Eq typeclass provides an interface for testing for equality. Any type where it makes sense to test for equality between two values of that type should be a member of the Eq class. All standard Haskell types except for IO (the type for dealing with input and output) and functions are a part of the Eq typeclass.</p>
+         </div>
+         <div class="plain-text">
+            <p>elem 함수는 (Eq a) => a -> [a] -> Bool의 타입을 가지고 있습니다. 왜냐하면 이 함수는 리스트에 대해서 ==를 사용해 우리가 찾고 있는 값이 그 리스트 안에 있는지 검사하기 때문입니다.</p>
+            <div class="partition"></div>
+            <p>The elem function has a type of (Eq a) => a -> [a] -> Bool because it uses == over a list to check whether some value we're looking for is in it.</p>
+         </div>
+         <div class="plain-text">
+            <p>아래에 몇 가지 기본적인 타입클래스를 소개하겠습니다.</p>
+            <div class="partition"></div>
+            <p>Some basic typeclasses:</p>
+         </div>
+         <div class="plain-text">
+            <p><code>Eq</code>는 동등성 검사를 지원하는 타입에 대해 사용됩니다. 이 클래스의 멤버들이 구현하는 함수는 <code>==</code>와 <code>/=</code>입니다. 따라서, 어떤 함수의 타입 변수에 Eq 클래스 제약이 있다면, 이 함수는 ==나 =/를 자신의 정의 내부의 어딘가에서 사용합니다. 함수를 제외하고 우리가 앞서 언급한 모든 타입은 Eq의 일부이므로, 동등성을 검사할 수 있습니다.</p>
+            <div class="partition"></div>
+            <p>Eq is used for types that support equality testing. The functions its members implement are == and /=. So if there's an Eq class constraint for a type variable in a function, it uses == or /= somewhere inside its definition. All the types we mentioned previously except for functions are part of Eq, so they can be tested for equality.</p>
+         </div>
+         <div class="code-block">
+            <pre>
+ghci> 5 == 5
+True
+ghci> 5 /= 5
+False
+ghci> 'a' == 'a'
+True
+ghci> "Ho Ho" == "Ho Ho"
+True
+ghci> 3.432 == 3.432
+True</pre>
+         </div>
+         <div class="plain-text">
+            <p><code>Ord</code>는 순서를 가지고 있는 타입을 위한 것입니다.</p>
+            <div class="partition"></div>
+            <p>Ord is for types that have an ordering.</p>
+         </div>
+         <div class="code-block">
+            <pre>
+ghci> :t (>)
+(>) :: (Ord a) => a -> a -> Bool</pre>
+         </div>
+         <div class="plain-text">
+            <p>함수를 제외하고 지금까지 살펴본 모든 타입은 Ord의 일부입니다. Ord는 >, <, >=, <=와 같은 모든 표준 비교 함수를 다룹니다. <code>compare</code>함수는 같은 타입인 두 개의 Ord 멤버를 취해 순서[ordering]를 반환합니다. Ordering은 그 값이 GT, LT, 혹은 EQ일 수 있는 타입으로, 이 값들은 각각 <em>~보다 큰[greater than]</em>, <em>~보다 작은[lesser than]</em>, 그리고 <em>equal</em>을 의미합니다.</p>
+            <div class="partition"></div>
+            <p>All the types we covered so far except for functions are part of Ord. Ord covers all the standard comparing functions such as >, <, >= and <=. The compare function takes two Ord members of the same type and returns an ordering. Ordering is a type that can be GT, LT or EQ, meaning greater than, lesser than and equal, respectively.</p>
+         </div>
+         <div class="plain-text">
+            <p>어떤 타입이 Ord의 멤버가 되려면, 그 타입은 우선 Eq 클래스의 멤버여야 합니다.</p>
+            <div class="partition"></div>
+            <p>To be a member of Ord, a type must first have membership in the prestigious and exclusive Eq club.</p>
+         </div>
+         <div class="code-block">
+            <pre>
+ghci> "Abrakadabra" < "Zebra"
+True
+ghci> "Abrakadabra" `compare` "Zebra"
+LT
+ghci> 5 >= 2
+True
+ghci> 5 `compare` 3
+GT</pre>
+         </div>
+         <div class="plain-text">
+            <p><code>Show</code>의 멤버는 문자열로 표시될 수 있습니다. 함수를 제외하고 지금까지 살펴본 모든 타입은 Show의 일부입니다. Show 타입클래스를 다루는 가장 많이 사용되는 함수는 <code>show</code>입니다. 이 함수는 타입이 Show의 멤버인 값 하나를 취하고 그 값을 우리에게 문자열로 보여줍니다.</p>
+            <div class="partition"></div>
+            <p>Members of Show can be presented as strings. All types covered so far except for functions are a part of Show. The most used function that deals with the Show typeclass is show. It takes a value whose type is a member of Show and presents it to us as a string.</p>
+         </div>
+         <div class="code-block">
+            <pre>
+ghci> show 3
+"3"
+ghci> show 5.334
+"5.334"
+ghci> show True
+"True"</pre>
+         </div>
+         <div class="plain-text">
+            <p><code>Read</code>는 Show 타입클래스의 일종의 반대입니다. <code>read</code>함수는 문자열 하나를 취해 Read의 멤버인 타입을 반환합니다.</p>
+            <div class="partition"></div>
+            <p>Read is sort of the opposite typeclass of Show. The read function takes a string and returns a type which is a member of Read.</p>
+         </div>
+         <div class="code-block">
+            <pre>
+ghci> read "True" || False
+True
+ghci> read "8.2" + 3.8
+12.0
+ghci> read "5" - 2
+3
+ghci> read "[1,2,3,4]" ++ [3]
+[1,2,3,4,3]</pre>
+         </div>
+         <div class="plain-text">
+            <p>지금까지는 아주 좋습니다. 다시 강조하지만, 지금까지 다뤄진 모든 타입은 이 타입클래스 내에 있습니다. 하지만 그냥 <code>read "4"</code>라고만 하면 무슨 일이 벌어질까요?</p>
+            <div class="partition"></div>
+            <p>So far so good. Again, all types covered so far are in this typeclass. But what happens if we try to do just read "4"?</p>
+         </div>
+         <div class="code-block">
+            <pre>
+ghci> read "4"
+<interactive>:1:0:
+    Ambiguous type variable `a' in the constraint:
+      `Read a' arising from a use of `read' at <interactive>:1:0-7
+    Probable fix: add a type signature that fixes these type variable(s)</pre>
+         </div>
+         <div class="plain-text">
+            <p>여기서 GHCI가 말하고 있는 것은, 우리가 반환값으로 무엇을 원하는지 모르겠다는 것입니다. 위의 예제들에서 read 함수를 사용했을 때 우리는 read 함수를 호출한 이후 그 결과를 가지고 무언가를 했다는 점에 주목하십시오. 그렇게 함으로써, GHCI는 우리가 read 함수로부터 어떤 종류의 결과를 원하는지 추론할 수 있었습니다. 우리가 결과값을 부울으로 사용했던 경우, GHCI는 자신이 Bool을 반환해야 한다는 것을 알고 있었습니다. 하지만 지금은, GHCI는 우리가 Read 클래스의 일부인 어떤 타입을 원한다는 것은 알지만, 정확히 무슨 타입인지는 모르고 있습니다. read 함수의 타입 표현을 한번 살펴봅시다.</p>
+            <div class="partition"></div>
+            <p>What GHCI is telling us here is that it doesn't know what we want in return. Notice that in the previous uses of read we did something with the result afterwards. That way, GHCI could infer what kind of result we wanted out of our read. If we used it as a boolean, it knew it had to return a Bool. But now, it knows we want some type that is part of the Read class, it just doesn't know which one. Let's take a look at the type signature of read.</p>
+         </div>
+         <div class="code-block">
+            <pre>
+ghci> :t read
+read :: (Read a) => String -> a</pre>
+         </div>
+         <div class="plain-text">
+            <p>즉, read 함수는 Read 클래스의 일부인 타입을 반환하지만, 만약 우리가 그 결과를 이후에 어떤 방법으로든 사용하려고 하지 않으면, GHCI는 반환값이 어떤 타입인지 알 도리가 없습니다. 이것이 바로 우리가 명시적인 <em>타입 표시[type annotation]</em>를 사용할 수 있는 이유입니다. 타입 표시란 표현식의 타입이 무엇이어야 하는지를 명시적으로 나타내는 방법입니다. 타입 표시를 하려면 표현식의 끝에 ::를 추가한 뒤 타입을 명시하면 됩니다.</p>
+            <div class="partition"></div>
+            <p>See? It returns a type that's part of Read but if we don't try to use it in some way later, it has no way of knowing which type. That's why we can use explicit type annotations. Type annotations are a way of explicitly saying what the type of an expression should be. We do that by adding :: at the end of the expression and then specifying a type. Observe:</p>
+         </div>
+         <div class="code-block">
+            <pre>
+ghci> read "5" :: Int
+5
+ghci> read "5" :: Float
+5.0
+ghci> (read "5" :: Float) * 4
+20.0
+ghci> read "[1,2,3,4]" :: [Int]
+[1,2,3,4]
+ghci> read "(3, 'a')" :: (Int, Char)
+(3, 'a')</pre>
+         </div>
+         <div class="plain-text">
+            <p>대부분의 표현식의 경우, 컴파일러는 그 타입이 무엇인지 스스로 추론할 수 있습니다. 하지만 때때로, <code>read "5"</code>같은 표현식에 대해, 컴파일러는 Int 타입의 값을 반환해야 할지 Float 타입의 값을 반환해야 할지 알지 못합니다. 이것의 타입이 무엇인지 보려면, 하스켈은 실제로 read "5"를 평가해야 할 것입니다. 하지만 하스켈은 정적 타입 언어이기 때문에, 코드가 컴파일되기 이전에 (혹은 GHCI의 경우, 평가되기 이전에) 모든 타입을 알고 있어야 합니다. 그래서 우리는 하스켈에게 이렇게 이야기할 수 밖에 없습니다. 「친애하는 하스켈 씨, 실례지만 혹시라도 알고 계시지 않으실까봐 말씀드립니다만, 이 표현식은 이 타입을 가져야 합니다.」</p>
+            <div class="partition"></div>
+            <p>Most expressions are such that the compiler can infer what their type is by itself. But sometimes, the compiler doesn't know whether to return a value of type Int or Float for an expression like read "5". To see what the type is, Haskell would have to actually evaluate read "5". But since Haskell is a statically typed language, it has to know all the types before the code is compiled (or in the case of GHCI, evaluated). So we have to tell Haskell: "Hey, this expression should have this type, in case you don't know!".</p>
+         </div>
+         <div class="plain-text">
+            <p><code>Enum</code>의 멤버들은 순차적으로 순서가 있는 타입입니다. 즉, 열거될 수 있습니다. Enum 타입클래스의 주요한 장점은 이것의 타입들을 리스트 범위에서 사용할 수 있다는 것입니다. 이 타입들은 또한 정의된 후계자[successor]와 전임자[predecessor]를 가지고 있어서, 여러분은 이것들을 succ과 pred 함수를 통해 얻을 수 있습니다. 이 클래스에 속한 타입들로는 (), Bool, Char, Ordering, Int, Integer, Float, 그리고 Double이 있습니다.</p>
+            <div class="partition"></div>
+            <p>Enum members are sequentially ordered types — they can be enumerated. The main advantage of the Enum typeclass is that we can use its types in list ranges. They also have defined successors and predecesors, which you can get with the succ and pred functions. Types in this class: (), Bool, Char, Ordering, Int, Integer, Float and Double.</p>
+         </div>
+         <div class="code-block">
+            <pre>
+ghci> ['a'..'e']
+"abcde"
+ghci> [LT .. GT]
+[LT,EQ,GT]
+ghci> [3 .. 5]
+[3,4,5]
+ghci> succ 'B'
+'C'</pre>
+         </div>
+         <div class="plain-text">
+            <p><code>Bounded</code>의 멤버들은 상계와 하계를 가지고 있습니다.</p>
+            <div class="partition"></div>
+            <p>Bounded members have an upper and a lower bound.</p>
+         </div>
+         <div class="code-block">
+            <pre>
+ghci> minBound :: Int
+-2147483648
+ghci> maxBound :: Char
+'\1114111'
+ghci> maxBound :: Bool
+True
+ghci> minBound :: Bool
+False</pre>
+         </div>
+         <div class="plain-text">
+            <p>minBound와 maxBound는 흥미롭습니다. 왜냐하면 이것들은 (Bounded a) => a의 타입을 가지고 있기 때문입니다. 어떤 의미에서는, 이것들은 다형[polymorphic] 상수입니다.</p>
+            <div class="partition"></div>
+            <p>minBound and maxBound are interesting because they have a type of (Bounded a) => a. In a sense they are polymorphic constants.</p>
+         </div>
+         <div class="plain-text">
+            <p>튜플의 요소들이 Bounded 내에 있다면, 모든 튜플 역시 Bounded의 일부입니다.</p>
+            <div class="partition"></div>
+            <p>All tuples are also part of Bounded if the components are also in it.</p>
+         </div>
+         <div class="code-block">
+            <pre>
+ghci> maxBound :: (Bool, Int, Char)
+(True,2147483647,'\1114111')</pre>
+         </div>
+         <div class="plain-text">
+            <p><code>Num</code>은 수와 관련된 타입클래스입니다. 이 타입클래스의 멤버들은 숫자처럼 행동할 수 있는 성질을 가지고 있습니다. 한 숫자의 타입을 검사해 봅시다.</p>
+            <div class="partition"></div>
+            <p>Num is a numeric typeclass. Its members have the property of being able to act like numbers. Let's examine the type of a number.</p>
+         </div>
+         <div class="code-block">
+            <pre>
+ghci> :t 20
+20 :: (Num t) => t</pre>
+         </div>
+         <div class="plain-text">
+            <p>whole number 역시 다형 상수인 것으로 보입니다. whole number는 Num 타입클래스의 멤버인 임의의 타입처럼 행동할 수 있습니다.</p>
+            <div class="partition"></div>
+            <p>It appears that whole numbers are also polymorphic constants. They can act like any type that's a member of the Num typeclass.</p>
+         </div>
+         <div class="code-block">
+            <pre>
+ghci> 20 :: Int
+20
+ghci> 20 :: Integer
+20
+ghci> 20 :: Float
+20.0
+ghci> 20 :: Double
+20.0</pre>
+         </div>
+         <div class="plain-text">
+            <p>이 타입들이 Num 타입클래스에 속한 타입들입니다. 만약 우리가 * 함수의 타입을 검사해 본다면, 우리는 이 함수가 모든 숫자를 수용하는 것을 확인하게 될 것입니다.</p>
+            <div class="partition"></div>
+            <p>Those are types that are in the Num typeclass. If we examine the type of *, we'll see that it accepts all numbers.</p>
+         </div>
+         <div class="code-block">
+            <pre>
+ghci> :t (*)
+(*) :: (Num a) => a -> a -> a</pre>
+         </div>
+         <div class="plain-text">
+            <p>* 함수는 같은 타입인 2개의 숫자를 취해 그 타입의 숫자 하나를 반환합니다. 이것이 바로 (5 :: Int) * (6 :: Integer)가 타입 오류를 일으키게 되는 반면 5 * (6 :: Integer)는 문제없이 동작하고 하나의 Integer를 반환하게 되는 이유입니다 (5는 Integer로도 Int로도 행동할 수 있으므로).</p>
+            <div class="partition"></div>
+            <p>It takes two numbers of the same type and returns a number of that type. That's why (5 :: Int) * (6 :: Integer) will result in a type error whereas 5 * (6 :: Integer) will work just fine and produce an Integer because 5 can act like an Integer or an Int.</p>
+         </div>
+         <div class="plain-text">
+            <p>어떤 타입이 Num 타입클래스에 속하기 위해서는, 그 타입은 반드시 Show에도 Eq에도 속해야 합니다.</p>
+            <div class="partition"></div>
+            <p>To join Num, a type must already be friends with Show and Eq.</p>
+         </div>
+         <div class="plain-text">
+            <p><code>Integral</code> 또한 수에 관련된 타입클래스입니다. Num 타입클래스는 모든 숫자를 포함합니다. 즉 실수와 정수를 포함합니다. 그러나 Integral 타입클래스는 오직 정수[integral] (whole number) 만을 포함합니다. Integral 타입클래스에는 Int와 Integer가 속해 있습니다.</p>
+            <div class="partition"></div>
+            <p>Integral is also a numeric typeclass. Num includes all numbers, including real numbers and integral numbers, Integral includes only integral (whole) numbers. In this typeclass are Int and Integer.</p>
+         </div>
+         <div class="plain-text">
+            <p><code>Floating</code>은 오직 부동소수점 수만을 포함합니다. 즉, Float과 Double만을 포함합니다.</p>
+            <div class="partition"></div>
+            <p>Floating includes only floating point numbers, so Float and Double.</p>
+         </div>
+         <div class="plain-text">
+            <p>숫자를 다루는 데 매우 유용한 함수가 하나 있는데 그것은 <code>fromIntegral</code>입니다. 이 함수의 타입 표현은 fromIntegral :: (Num b, Integral a) => a -> b입니다. 이 타입 표현으로부터 우리는 이 함수가 하나의 정수를 취해 그 숫자를 더욱 일반적인 수로 바꾼다는 것을 알았습니다. 이 함수는 정수형과 부동소수점형이 잘 어울리기를 원할 때 유용합니다. 예를 들어, length 함수의 타입 표현은 length :: [a] -> Int 입니다만, 이것은 (Num b) => length :: [a] -> b 에 비해 덜 일반적[general]입니다. 제 생각에 length 함수가 이러한 타입 표현을 가지는 데엔 역사적인 이유같은 것이 있다고 생각합니다. 개인적인 생각이긴 하지만, 이는 다소 별로인 것 같다고 생각합니다. 하여간에, 만약 우리가 리스트의 길이를 얻은 뒤 그것을 3.2에 더하려고 한다면, 오류를 얻게 됩니다. 왜냐하면 우리는 Int와 부동소수점 수를 더하려고 했기 때문입니다. 따라서, 이러한 문제를 우회하기 위해 fromIntegral (length [1,2,3,4]) + 3.2 라고 하면 잘 작동합니다.</p>
+            <div class="partition"></div>
+            <p>A very useful function for dealing with numbers is fromIntegral. It has a type declaration of fromIntegral :: (Num b, Integral a) => a -> b. From its type signature we see that it takes an integral number and turns it into a more general number. That's useful when you want integral and floating point types to work together nicely. For instance, the length function has a type declaration of length :: [a] -> Int instead of having a more general type of (Num b) => length :: [a] -> b. I think that's there for historical reasons or something, although in my opinion, it's pretty stupid. Anyway, if we try to get a length of a list and then add it to 3.2, we'll get an error because we tried to add together an Int and a floating point number. So to get around this, we do fromIntegral (length [1,2,3,4]) + 3.2 and it all works out.</p>
+         </div>
+         <div class="plain-text">
+            <p>한편 fromIntegral 함수는 타입 표현에 여러개의 클래스 제약을 가지고 있다는 점에 주목하십시오. 여러개의 클래스 제약을 가지는 것에는 전혀 문제가 없으며, 클래스 제약은 괄호 내에서 콤마로 구분됩니다.</p>
+            <div class="partition"></div>
+            <p>Notice that fromIntegral has several class constraints in its type signature. That's completely valid and as you can see, the class constraints are separated by commas inside the parentheses.</p>
+         </div>
+      </article>
+   </body>
+   <script src="../src/navigator.js"></script>
+   <script>
+      tailorDocument("types-and-typeclasses.html");
+   </script>
+</html>
