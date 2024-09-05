@@ -6,11 +6,11 @@ gd::h2
 패턴 매칭
 Pattern matching
 
-이 장은 하스켈의 멋진 구문론적 구성체들 중 몇 가지를 다룰 것이며, 이에 우리는 패턴 매칭에서부터 시작하도록 하겠습니다. 패턴 매칭이라고 하는 것은, 다음의 요소들로 이루어져 있습니다. 즉, 데이터가 준수해야 하는 패턴을 식별하고 데이터가 정말로 그 패턴을 준수하는지 확인하며 그러한 패턴에 따라 데이터를 해체하는 것입니다.
+이 장은 하스켈의 멋진 구문론적 구성요소들 중 몇 가지를 다룰 것이며, 이에 우리는 패턴 매칭에서부터 시작하도록 하겠습니다. 패턴 매칭이라고 하는 것은, 다음의 요소들로 이루어져 있습니다. 즉, 데이터가 준수해야 하는 패턴을 식별하고 데이터가 정말로 그 패턴을 준수하는지 확인하며 그러한 패턴에 따라 데이터를 해체하는 것입니다.
 
 This chapter will cover some of Haskell's cool syntactic constructs and we'll start with pattern matching. Pattern matching consists of specifying patterns to which some data should conform and then checking to see if it does and deconstructing the data according to those patterns.
 
-함수를 정의할 때, 여러분은 각기 다른 패턴을 위해 별도의 함수 본체를 정의할 수 있습니다. 이렇게 하는 것은 단순하고 가독성있는 정말로 깔끔한 코드로 이어집니다. 여러분은 임의의 데이터 타입에 패턴매칭을 할 수 있습니다. 이를테면, 숫자, 문자, 리스트, 튜플 등입니다. 우선, 매우 간단한 함수 하나를 만들어 봅시다. 이 함수는 우리가 제공한 숫자가 7인지 아닌지를 검사합니다.
+함수를 정의할 때, 여러분은 각기 다른 패턴을 위해 별도의 함수 본체를 정의할 수 있습니다. 이렇게 함으로써 단순하고 가독성있는 정말 깔끔한 코드를 작성할 수 있게 됩니다. 여러분은 임의의 데이터 타입에 패턴매칭을 할 수 있습니다. 이를테면, 숫자, 문자, 리스트, 튜플 등입니다. 우선, 매우 간단한 함수 하나를 만들어 봅시다. 이 함수는 우리가 제공한 숫자가 7인지 아닌지를 검사합니다.
 
 When defining functions, you can define separate function bodies for different patterns. This leads to really neat code that's simple and readable. You can pattern match on any data type — numbers, characters, lists, tuples, etc. Let's make a really trivial function that checks if the number we supplied to it is a seven or not.
 
@@ -23,7 +23,7 @@ lucky x = "대단히 유감입니다만, 행운의 여신이 여러분으로부�
 역주: 이대로 ghci상에서 호출하게 되면 한글이 나오지 않으므로 putStrLn (lucky 7) 과 같은 식으로 호출하면 되는 듯 합니다.
 gd::endpre
 
-여러분이 <code>lucky</code>를 호출할 때, 패턴들은 위에서부터 아래로 검사될 것이며 어떤 패턴과 일치할 때, 그에 상응하는 함수 본체가 사용될 것입니다. 하나의 숫자가 위의 첫번째 패턴과 일치할 수 있는 유일한 방법은 숫자가 7일 때만입니다. 만약 7이 아니라면, 첫번째 검사는 실패하게 되고 이에 두번째 패턴으로 가게 되는데, 두번째 패턴은 임의의 숫자를 매칭하고 그 숫자를 x에 속박합니다. 이 함수는 또한 if문을 사용해서도 구현될 수 있었습니다. 하지만 만약 우리가 1부터 5까지의 숫자를 말하고 그 밖의 다른 숫자에 대해서는 "1과 5 사이에 있지 않음"이라고 말하는 함수를 원한다면 어떡할까요? 패턴 매칭이 없다면, 우리는 아주 난해한 if then else 트리를 만들어야 할 것입니다. 그러나, 패턴 매칭이 있다면:
+여러분이 <code>lucky</code>를 호출할 때, 패턴들은 위에서부터 아래로 검사될 것이며 어떤 패턴과 일치할 때, 그에 상응하는 함수 본체가 사용될 것입니다. 하나의 숫자가 위의 첫번째 패턴과 일치할 수 있는 유일한 방법은 숫자가 7일 때만입니다. 만약 7이 아니라면, 첫번째 검사는 실패하게 되고 이에 두번째 패턴으로 가게 되는데[fall through], 두번째 패턴은 임의의 숫자를 매칭하고 그 숫자를 x에 속박합니다. 이 함수는 또한 if문을 사용해서도 구현될 수 있었습니다. 하지만 만약 우리가 1부터 5까지의 숫자를 말하고 그 밖의 다른 숫자에 대해서는 "1과 5 사이에 있지 않음"이라고 말하는 함수를 원한다면 어떡할까요? 패턴 매칭이 없다면, 우리는 아주 난해한 if then else 트리를 만들어야 할 것입니다. 그러나, 패턴 매칭이 있다면:
 
 When you call lucky, the patterns will be checked from top to bottom and when it conforms to a pattern, the corresponding function body will be used. The only way a number can conform to the first pattern here is if it is 7. If it's not, it falls through to the second pattern, which matches anything and binds it to x. This function could have also been implemented by using an if statement. But what if we wanted a function that says the numbers from 1 to 5 and says "Not between 1 and 5" for any other number? Without pattern matching, we'd have to make a pretty convoluted if then else tree. However, with it:
 
@@ -37,11 +37,11 @@ sayMe 5 = "Five!"
 sayMe x = "Not between 1 and 5"
 gd::endpre
 
-만약 우리가 마지막 패턴 ("광범위"한 패턴) 을 맨 위로 옮겼다면, 이 함수는 항상 "1과 5 사이에 없음"을 말하게 될 것임에 주목하십시오. 이렇게 되는 이유는 이 패턴이 모든 숫자를 받아들일 것이고 따라서 숫자들은 다른 패턴으로 내려가서 검사될 기회를 갖지 못하기 때문입니다.
+만약 우리가 마지막 패턴 ("광범위[catch-all]"한 패턴) 을 맨 위로 옮겼다면, 이 함수는 항상 "1과 5 사이에 없음"을 말하게 될 것임에 주목하십시오. 이렇게 되는 이유는 이 패턴이 모든 숫자를 받아들일 것이고 따라서 숫자들은 다른 패턴으로 내려가서 검사될 기회를 갖지 못하기 때문입니다.
 
 Note that if we moved the last pattern (the catch-all one) to the top, it would always say "Not between 1 and 5", because it would catch all the numbers and they wouldn't have a chance to fall through and be checked for any other patterns.
 
-지난번에 우리가 구현했던 팩토리얼 함수를 기억하십니까? 우리는 어떤 숫자 n의 팩토리얼을 <code>product [1..n]</code>으로서 정의했었습니다. 우리는 팩토리얼 함수를 또한 <em>재귀적</em>으로도 정의할 수 있으며, 이 편이 팩토리얼이 수학에서 보통 정의되는 방식입니다. 우리는 0의 팩토리얼이 1이라고 말함으로써 시작합니다. 그리고나서 우리는 임의의 양의 정수의 팩토리얼은 그 정수에 그 정수의 이전 수의 팩토리얼을 곱한 것이라고 나타냅니다. 하스켈의 용어로 이를 표현해보면 다음과 같습니다:
+3장 1절에서 구현했던 팩토리얼 함수를 기억하십니까? 우리는 어떤 숫자 n의 팩토리얼을 <code>product [1..n]</code>으로서 정의했었습니다. 우리는 팩토리얼 함수를 또한 <em>재귀적</em>으로도 정의할 수 있으며, 이 편이 팩토리얼이 수학에서 보통 정의되는 방식입니다. 우리는 0의 팩토리얼이 1이라고 말함으로써 시작합니다. 그리고나서 우리는 임의의 양의 정수의 팩토리얼은 그 정수에 그 정수의 이전 수의 팩토리얼을 곱한 것이라고 나타냅니다. 하스켈의 용어로 이를 표현해보면 다음과 같습니다:
 
 Remember the factorial function we implemented previously? We defined the factorial of a number n as product [1..n]. We can also define a factorial function <em>recursively</em>, the way it is usually defined in mathematics. We start by saying that the factorial of 0 is 1. Then we state that the factorial of any positive integer is that integer multiplied by the factorial of its predecessor. Here's how that looks like translated in Haskell terms.
 
@@ -79,7 +79,7 @@ ghci> charName 'h'
 "*** Exception: tut.hs:(53,0)-(55,21): Non-exhaustive patterns in function charName
 gd::endpre
 
-우리가 완전하지 않은 패턴을 가지고 있다는 불평이며, 실제로 그렇습니다. 패턴을 만들 때, 우리는 항상 "광범위"한 패턴을 포함해야 합니다. 그리하여 우리의 프로그램이 예상하지 못한 입력을 받아도 고장나지 않도록.
+우리가 완전하지 않은[non-exhaustive] 패턴을 가지고 있다는 불평이며, 실제로 그렇습니다. 패턴을 만들 때, 우리는 항상 "광범위"한 패턴을 포함해야 합니다. 그리하여 우리의 프로그램이 예상하지 못한 입력을 받아도 고장나지 않도록.
 
 It complains that we have non-exhaustive patterns, and rightfully so. When making patterns, we should always include a catch-all pattern so that our program doesn't crash if we get some unexpected input.
 
@@ -120,11 +120,11 @@ third :: (a, b, c) -> c
 third (_, _, z) = z
 gd::endpre
 
-<code>_</code>는 list comprehension에서와 같은 것을 의미합니다. 이것은 우리가 그 부분이 무엇인지 정말로 상관하지 않는다는 것을 의미하므로, 우리는 단지 <code>_</code>를 작성합니다.
+<code>_</code>는 리스트 구성에서와 같은 것을 의미합니다. 이것은 우리가 그 부분이 무엇인지 정말로 상관하지 않는다는 것을 의미하므로, 우리는 단지 <code>_</code>를 작성합니다.
 
 The _ means the same thing as it does in list comprehensions. It means that we really don't care what that part is, so we just write a _.
 
-지금 기억났는데, 여러분은 또한 list comprehension에서도 패턴매칭할 수 있습니다. 다음을 확인해 보십시오:
+지금 기억났는데, 여러분은 또한 리스트 구성에서도 패턴매칭할 수 있습니다. 다음을 확인해 보십시오:
 
 Which reminds me, you can also pattern match in list comprehensions. Check this out:
 
@@ -193,7 +193,7 @@ gd::endpre
 
 This function is safe because it takes care of the empty list, a singleton list, a list with two elements and a list with more than two elements. Note that (x:[]) and (x:y:[]) could be rewriten as [x] and [x,y] (because its syntatic sugar, we don't need the parentheses). We can't rewrite (x:y:_) with square brackets because it matches any list of length 2 or more.
 
-우리는 list comprehension을 사용해 이미 우리만의 <code>length</code>함수를 구현했습니다. 이제 우리는 이 함수를 패턴 매칭과 조금의 재귀를 사용해 구현할 것입니다.
+우리는 리스트 구성을 사용해 이미 우리만의 <code>length</code>함수를 구현했습니다. 이제 우리는 이 함수를 패턴 매칭과 조금의 재귀를 사용해 구현할 것입니다.
 
 We already implemented our own length function using list comprehension. Now we'll do it by using pattern matching and a little recursion:
 
@@ -506,7 +506,7 @@ ghci> (let (a,b,c) = (1,2,3) in a+b+c) * 100
 600
 gd::endpre
 
-여러분은 또한 <em>let</em> 바인딩을 list comprehension 내부에 놓을 수 있습니다. <em>where</em>으로 보조함수를 정의하는 대신 <em>let</em>을 list comprehension 내부에서 사용하기 위해 몸무게-신장 쌍의 리스트를 계산하는 이전 예제를 재작성해 봅시다.
+여러분은 또한 <em>let</em> 바인딩을 리스트 구성 내부에 놓을 수 있습니다. <em>where</em>으로 보조함수를 정의하는 대신 <em>let</em>을 리스트 구성 내부에서 사용하기 위해 몸무게-신장 쌍의 리스트를 계산하는 이전 예제를 재작성해 봅시다.
 
 You can also put let bindings inside list comprehensions. Let's rewrite our previous example of calculating lists of weight-height pairs to use a let inside a list comprehension instead of defining an auxiliary function with a where.
 
@@ -515,7 +515,7 @@ calcBmis :: (RealFloat a) => [(a, a)] -> [a]
 calcBmis xs = [bmi | (w, h) <- xs, let bmi = w / h ^ 2]
 gd::endpre
 
-우리는 우리가 술어를 포함시키는 것과 매우 유사하게 <em>let</em>을 list comprehension 내부에 포함시키지만, 다만 let 바인딩은 리스트를 필터링하지 않고, 오직 이름들에 속박할 뿐입니다. list comprehension 내부에서 <em>let</em>에서 정의된 이름들은 출력함수 (| 이전의 부분) 와 이 let 바인딩의 이후에 오는 모든 술어와 부분들에 보입니다. 그래서 우리는 이 함수가 오직 뚱뚱한 사람의 BMI만을 반환하게 만들 수도 있습니다.
+우리는 우리가 술어를 포함시키는 것과 매우 유사하게 <em>let</em>을 리스트 구성 내부에 포함시키지만, 다만 let 바인딩은 리스트를 필터링하지 않고, 오직 이름들에 속박할 뿐입니다. 리스트 구성 내부에서 <em>let</em>에서 정의된 이름들은 출력함수 (| 이전의 부분) 와 이 let 바인딩의 이후에 오는 모든 술어와 부분들에 보입니다. 그래서 우리는 이 함수가 오직 뚱뚱한 사람의 BMI만을 반환하게 만들 수도 있습니다.
 
 We include a let inside a list comprehension much like we would a predicate, only it doesn't filter the list, it only binds to names. The names defined in a let inside a list comprehension are visible to the output function (the part before the |) and all predicates and sections that come after of the binding. So we could make our function return only the BMIs of fat people:
 
@@ -528,7 +528,7 @@ gd::endpre
 
 We can't use the bmi name in the (w, h) <- xs part because it's defined prior to the let binding.
 
-우리는 <em>let</em> 바인딩의 <em>in</em> 부분을 우리가 let 바인딩을 list comprehension에서 사용했을 때 생략했는데 그 이유는 이름들의 가시성이 이미 list comprehension에서 미리 정의되었기 때문입니다. 그러나, 우리는 <em>let in</em> 바인딩을 술어에서 사용할 수도 있고 그 정의된 이름들은 오직 그 술어에만 보일 것입니다. <em>in</em> 부분은 또한 함수와 상수를 GHCi에서 직접적으로 정의할 때 생략될 수 있습니다. 만약 우리가 그렇게 한다면, 그 이름들은 전체 상호작용 세션 내내 보일 것입니다.
+우리는 <em>let</em> 바인딩의 <em>in</em> 부분을 우리가 let 바인딩을 리스트 구성에서 사용했을 때 생략했는데 그 이유는 이름들의 가시성이 이미 리스트 구성에서 미리 정의되었기 때문입니다. 그러나, 우리는 <em>let in</em> 바인딩을 술어에서 사용할 수도 있고 그 정의된 이름들은 오직 그 술어에만 보일 것입니다. <em>in</em> 부분은 또한 함수와 상수를 GHCi에서 직접적으로 정의할 때 생략될 수 있습니다. 만약 우리가 그렇게 한다면, 그 이름들은 전체 상호작용 세션 내내 보일 것입니다.
 
 We omitted the in part of the let binding when we used them in list comprehensions because the visibility of the names is already predefined there. However, we could use a let in binding in a predicate and the names defined would only be visible to that predicate. The in part can also be omitted when defining functions and constants directly in GHCi. If we do that, then the names will be visible throughout the entire interactive session.
 

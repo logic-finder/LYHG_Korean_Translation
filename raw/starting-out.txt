@@ -141,7 +141,7 @@ ghci> max 100 101
 101 
 gd::endpre
 
-함수 적용[function application], 즉 함수명 뒤에 띄어쓰기를 배치하고 그 뒤로 매개변수 를 나열함으로써 함수를 호출하는 것은, 가장 높은 우선순위[precedence]를 가지고 있습니다. 요컨대, 아래의 두 문[statement]은 동일합니다.
+함수 적용[function application], 즉 함수명 뒤에 띄어쓰기를 배치하고 그 뒤로 매개변수를 나열함으로써 함수를 호출하는 것은, 가장 높은 우선순위[precedence]를 가지고 있습니다. 요컨대, 아래의 두 문[statement]은 동일합니다.
 
 Function application (calling a function by putting a space after it and then typing out the parameters) has the highest precedence of them all. What that means for us is that these two statements are equivalent.
 

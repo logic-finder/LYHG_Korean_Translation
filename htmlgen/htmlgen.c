@@ -1,14 +1,15 @@
 #include <stdio.h>
 #include <string.h>
 
-// Compile: at Developer Command Prompt, run "cl htmlgen.c /utf-8".
-// Note: in case of #define UNIX, "gcc -o htmlgen htmlgen.c" would work, I guess.
-#define WIN32
+// Compile
+#define UNIX
+// (= WIN32) at Developer Command Prompt, run "cl htmlgen.c /utf-8".
+// (= UNIX) "make" or "gcc -o htmlgen htmlgen.c"
 #include "htmlgen.h"
 
 const char *error_msg = "htmlgen: \033[1;31mprocessing halted!\033[0m\n\033[4mREASON\033[0m";
 
-int main(int argc, char *argv[]) {
+int main(int argc, const char *argv[]) {
    if (argc != 4) raise_err(
       "htmlgen: usage: htmlgen input.txt OUTPUT_PATH FILE_NAME.html");
 
@@ -98,6 +99,7 @@ void print_prologue(FILE *dest) {
          "         <ul id=\"nav-misc\"></ul>\n"
          "         <hr>\n"
          "         <ol id=\"nav-intro\"></ol>\n"
+         "         <hr>\n"
          "         <div id=\"nav-main\"></div>\n"
          "         <p id=\"memo\">\n"
          "            <b>메모</b>:&emsp;개인적인 공부용으로 번역하였습니다.\n"

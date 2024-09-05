@@ -1,3 +1,6 @@
-/htmlgen/htmlgen.exe
-/htmlgen/htmlgen.obj
-/temp
+htmlgen/htmlgen.exe
+htmlgen/htmlgen.obj
+htmlgen/htmlgen
+htmlgen/htmlgen.o
+
+temp

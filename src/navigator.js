@@ -4,7 +4,7 @@ const navMiscData = [
    content("번역본 레포지토리 바로가기", "https://github.com/logic-finder/LYHG_korean_translation")
 ];
 const navIntroData = [
-   content("자주 나오는 질문들", "faq")
+   content("자주 나오는 질문들", "faq.html")
 ];
 const navMainData = [
    content("소개", "introduction.html"),
@@ -31,8 +31,10 @@ function tailorDocument(title) {
    const { found,
            nthArr,
            nthElem } = locateCurrentDocument([navIntroData, navMainData], title);
-   if (!found)
+   if (!found) {
       console.error(`navigator: couldn't find ${title}.`);
+      return;
+   }
 
    constructTOC(nthArr, nthElem);
    if (nthArr === 0) {
@@ -68,14 +70,13 @@ function locateCurrentDocument(haystacks, needle) {
    };
 
    for (let haystack = 0; haystack < haystacks.length; haystack++) {
-      for (let hay = 0; hay < haystacks[haystack].length; hay++) {
+      for (let hay = 0; hay < haystacks[haystack].length; hay++)
          if (haystacks[haystack][hay].link === needle) {
             location.found = true;
             location.nthArr = haystack;
             location.nthElem = hay;
             break;
          }
-      }
       if (location.found)
          break;
    }
