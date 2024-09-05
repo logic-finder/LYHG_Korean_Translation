@@ -7,6 +7,8 @@ Executing `make` from this directory will build `htmlgen`, the executable.
 # Usage
 Executing `make gen name=input.txt` will search the `input.txt` from the `../raw` directory and will produce a `input.html` to the `../generated` directory.
 
+In order to generate all output .html files from all the corresponding input .txt files in the `../raw` directory, please execute `make genall`.
+
 # Mechanism
 Basically, this program keeps writing `<div>...</div>` to the output file, until the end of the input file.
 ## Generator Directive
