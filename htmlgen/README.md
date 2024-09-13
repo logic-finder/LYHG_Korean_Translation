@@ -5,12 +5,12 @@
 Executing `make` from this directory will build `htmlgen`, the executable.
 
 # Usage
-Executing `make gen name=input.txt` will search the `input.txt` from the `../raw` directory and will produce a `input.html` to the `../generated` directory.
+Executing `make gen name=input` will search the `input.txt` from the `../raw` directory and will produce a `input.html` to the `../generated` directory.
 
 In order to generate all output .html files from all the corresponding input .txt files in the `../raw` directory, please execute `make genall`.
 
 # Mechanism
-Basically, this program keeps writing `<div>...</div>` to the output file, until the end of the input file.
+Basically, this program reads a plain text file and produces a html file based on some processing rules. These rules are explained in the below sections.
 ## Generator Directive
 The way this program interprets the input file depends on *generator directives* which appear in the input file. Currently there are four in them:
 - `gd::pre` specifies the beginning of a `pre` tag, namely `<pre>`.
@@ -18,14 +18,16 @@ The way this program interprets the input file depends on *generator directives*
 - `gd::h1` specifies the next two lines are of `<h1>`.
 - `gd::h2` specifies the next two lines are of `<h2>`.
 
+If no directive is specified, then the current line and the next line are regarded as `<p>`.
+
 ## Explanation
 In the below is explained how the program works.
 
-First, the program gets a line from `argv[1]`. If this line is empty, then discarded; the program goes to the next line.
+First, the program gets one line from `argv[1]`, which is the input file. If this line is empty, then discarded; the program goes to the next line.
 
-If the program have not opened a `<div>` yet, the program sees whether this line is a *pre* directive.
+If that line is not empty and if the program have not opened a `<div>` yet, then the program sees whether this line is a *pre* directive.
 
-If so, the program writes `<div class="code-block">` and keeps writing the lines into the `<div>` until the program reads a line which is a *endpre* directive. If the program reads the *endpre* directive, the program writes `</div>`.
+If so, the program writes `<div class="code-block">` to the output file and keeps writing the lines into that `<div>` until the program reads a line which is a *endpre* directive. If the program reads the *endpre* directive, the program writes `</div>`.
 
 Otherwise, the program writes `<div class="plain-text">` and sees what kind of line it is. If this line is a *h1* directive, the program discards the current line and writes the next two lines into this `<div>` as `<h1>line</h1>`. If the line is a *h2* direvtive, the programs behaves in the similar way as the case of the *h1* directive. If the line is neither a *h1* nor *h2* directive, the program writes the current line and the next line as `<p>line</p>` into this `<div>`. After the program has written two lines inside this `<div>`, the program closes it, namely with `</div>`.
 
